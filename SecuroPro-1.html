@@ -174,6 +174,59 @@
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
 
+  /* ── RESPONSIVE MOBILE ───────────────────────────────── */
+  @media (max-width: 640px) {
+    main { padding: 12px; }
+
+    /* Calendario compacto */
+    .cal-day { min-height: 44px; padding: 2px; }
+    .cal-day-num { font-size: 11px; }
+    .cal-day.today .cal-day-num { width: 18px; height: 18px; font-size: 10px; }
+    .cal-event { font-size: 9px; padding: 1px 3px; }
+    .cal-day-header { font-size: 9px; padding: 4px 0; letter-spacing: 0; }
+    .calendar-grid { gap: 2px; }
+    .calendar-month { font-size: 15px; }
+
+    /* Modales desde abajo */
+    .modal { padding: 18px; border-radius: 14px 14px 0 0; }
+    .modal-overlay { padding: 0; }
+    .modal-overlay.open { align-items: flex-end; }
+    .modal-title { font-size: 15px; }
+
+    /* Botones acción en columna */
+    .flex-end { flex-direction: column-reverse; }
+    .flex-end .btn { width: 100%; justify-content: center; }
+
+    /* Presupuesto items */
+    .presup-item-row { flex-wrap: wrap; }
+    .presup-item-row > div:last-child { width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+    /* Header */
+    header { height: 52px; padding: 0 12px; }
+    .logo { font-size: 18px; }
+    #user-info { display: none; }
+
+    /* Nav */
+    .nav-btn { font-size: 10px; padding: 9px 3px; }
+
+    /* Cards */
+    .card { padding: 14px; }
+    .client-card { padding: 12px; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .client-card .client-actions { width: 100%; display: flex; gap: 8px; }
+    .client-card .client-actions .btn { flex: 1; justify-content: center; }
+    .presup-card { padding: 12px; }
+    .prod-cat-card { flex-wrap: wrap; gap: 8px; }
+    .prod-cat-card > div:last-child { width: 100%; display: flex; justify-content: space-between; }
+
+    /* FAB y toast */
+    .fab { bottom: 20px; right: 16px; width: 52px; height: 52px; font-size: 22px; }
+    #toast { bottom: 80px; font-size: 13px; padding: 10px 16px; }
+
+    /* Stats */
+    .stat-num { font-size: 26px; }
+    .section-title { font-size: 17px; }
+  }
+
   /* CHECKBOXES */
   .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .checkbox-item {
