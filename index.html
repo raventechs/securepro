@@ -402,7 +402,16 @@ body.role-viewer .btn-edit-client{display:none!important}
 <body>
 
 <!-- LOGIN -->
-<div id="screen-login" class="screen active">
+<!-- LOADING -->
+<div id="screen-loading" class="screen active" style="align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy),#1a3060)">
+  <div style="text-align:center">
+    <div style="font-size:44px;margin-bottom:16px">🔒</div>
+    <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px">Secure<span style="color:var(--gold)">Pro</span></div>
+    <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin:16px auto 0"></div>
+  </div>
+</div>
+
+<div id="screen-login" class="screen">
   <div class="auth-card">
     <div class="brand-row">
       <div class="brand-icon" id="login-logo">🔒</div>
@@ -1215,18 +1224,26 @@ async function joinNegocioConUsuarioActual(){
   const btn=document.getElementById("btn-inv-join");
   if(btn){btn.disabled=true;btn.textContent="Uniéndome...";}
   try{
+    // Marcar invitación como usada
     await updateDoc(doc(db,"invitaciones",activeInvite.code),{usado:true,usadoPor:me.email,usadoAt:serverTimestamp()});
+    // Crear o actualizar el documento del usuario con el negocioId del invite
     await setDoc(doc(db,"usuarios",me.uid),{
-      rol:activeInvite.rol,negocioId:activeInvite.negocioId,
-      estado:"pendiente",updatedAt:serverTimestamp()
+      uid:me.uid,email:me.email,
+      rol:activeInvite.rol,
+      negocioId:activeInvite.negocioId,
+      estado:"pendiente",
+      banned:false,
+      status:"demo",
+      demoStart:serverTimestamp(),
+      updatedAt:serverTimestamp()
     },{merge:true});
     window.history.replaceState({},"",window.location.pathname);
     activeInvite=null;
-    // Recargar el documento del usuario y redirigir a pendiente
     userDoc=(await getDoc(doc(db,"usuarios",me.uid))).data();
     negocioId=userDoc.negocioId;
     showScreen("screen-pending");
   }catch(e){
+    console.error("Error en joinNegocioConUsuarioActual:",e);
     toast("Error al unirte al equipo. Intentá de nuevo.","err");
     if(btn){btn.disabled=false;btn.textContent="Unirme al equipo →";}
   }
