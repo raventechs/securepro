@@ -359,6 +359,44 @@ input,select,button,textarea{font-family:var(--font)}
 .demo-badge.activa{background:var(--warn-bg);color:var(--warn)}
 .demo-badge.vencida{background:var(--red-bg);color:var(--red)}
 .demo-badge.completa{background:var(--green-bg);color:var(--green)}
+/* INVITACIÓN */
+.invite-card{max-width:380px}
+.invite-card-icon{font-size:44px;margin-bottom:10px}
+.invite-card-negocio{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px}
+[data-theme="dark"] .invite-card-negocio{color:var(--gold)}
+.invite-card-sub{font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.invite-card-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green);border:1px solid #86efac;border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:18px}
+.invite-expired{background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--radius);padding:14px;color:var(--red);font-size:14px;font-weight:600;margin-bottom:16px}
+/* EQUIPO */
+.invite-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.invite-section-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.invite-row{display:flex;gap:8px;margin-bottom:8px}
+.invite-link-box{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:11px;color:var(--muted);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-copy-link{background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-wa-invite{background:#25d366;color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.invite-expiry{font-size:11px;color:var(--muted);text-align:center;margin-top:6px}
+.equipo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+.equipo-av{width:38px;height:38px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.equipo-info{flex:1;min-width:0}
+.equipo-email{font-size:14px;font-weight:700;color:var(--text)}
+.equipo-rol{font-size:12px;color:var(--muted);margin-top:2px}
+.equipo-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px}
+.equipo-badge.pendiente{background:var(--warn-bg);color:var(--warn)}
+.equipo-badge.activo{background:var(--green-bg);color:var(--green)}
+.equipo-actions{display:flex;gap:6px;flex-shrink:0}
+/* PERMISOS POR ROL */
+body.role-readonly .main-fab,
+body.role-readonly #btn-new-client,
+body.role-readonly #btn-new-presup,
+body.role-readonly #btn-new-prod,
+body.role-readonly #btn-new-event,
+body.role-readonly .btn-del-client,
+body.role-readonly #btn-del-presup,
+body.role-readonly #btn-edit-presup,
+body.role-readonly #btn-ficha-edit,
+body.role-readonly #btn-add-seg,
+body.role-readonly .seg-actions button[data-action]{display:none!important}
+body.role-viewer .btn-edit-client{display:none!important}
 </style>
 </head>
 <body>
@@ -385,6 +423,34 @@ input,select,button,textarea{font-family:var(--font)}
   </div>
 </div>
 
+<!-- INVITACIÓN -->
+<div id="screen-invite" class="screen">
+  <div class="auth-card invite-card">
+    <div class="invite-card-icon" id="invite-neg-icon">🔒</div>
+    <div class="invite-card-negocio" id="invite-neg-nombre">Cargando...</div>
+    <div class="invite-card-sub" id="invite-neg-sub">Fuiste invitado a unirte como técnico</div>
+    <div id="invite-expired-msg" style="display:none" class="invite-expired">⏰ Este link ya expiró. Pedile al administrador que genere uno nuevo.</div>
+    <div id="invite-valid-wrap">
+      <div class="invite-card-badge" id="invite-role-badge">✅ Invitación válida</div>
+      <div class="field" style="text-align:left"><label>Email</label><input id="inv-email" type="email" placeholder="tu@email.com"/></div>
+      <div class="field" style="text-align:left"><label>Contraseña</label><input id="inv-pass" type="password" placeholder="Mínimo 6 caracteres"/></div>
+      <div class="auth-err" id="inv-err"></div>
+      <button class="btn-primary" id="btn-inv-register">Unirme al equipo →</button>
+    </div>
+    <button class="btn-demo-logout" style="margin-top:14px" id="btn-inv-cancel">Cancelar</button>
+  </div>
+</div>
+
+<!-- PENDIENTE DE APROBACIÓN -->
+<div id="screen-pending" class="screen">
+  <div class="auth-card" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⏳</div>
+    <div class="auth-title">Esperando aprobación</div>
+    <div class="auth-sub" style="margin-bottom:24px">El administrador todavía no aprobó tu acceso al equipo. Una vez que lo haga, vas a poder entrar normalmente.</div>
+    <button class="btn-demo-logout" id="btn-pending-logout">Cerrar sesión</button>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="screen-app" class="screen">
   <div class="app-header">
@@ -402,6 +468,7 @@ input,select,button,textarea{font-family:var(--font)}
     <button class="nav-btn" data-section="presupuestos">💰 Presupuestos</button>
     <button class="nav-btn" data-section="catalogo">📦 Catálogo</button>
     <button class="nav-btn" data-section="calendario">📅 Agenda</button>
+    <button class="nav-btn" id="nav-equipo" data-section="equipo" style="display:none">👥 Equipo</button>
     <button class="nav-btn" data-section="configuracion">⚙️ Config</button>
   </nav>
   <div class="app-main">
@@ -448,6 +515,23 @@ input,select,button,textarea{font-family:var(--font)}
       </div>
       <div class="sec-header" style="margin-top:4px"><span class="sec-title">Todos los eventos</span><button class="btn-sm primary" id="btn-new-event">＋ Evento</button></div>
       <div id="events-list"></div>
+    </div>
+    <div class="section" id="section-equipo">
+      <div class="sec-header"><span class="sec-title">Equipo</span></div>
+      <div class="invite-section">
+        <div class="invite-section-title">🔗 Invitar técnico</div>
+        <div class="field"><label>Rol del invitado</label>
+          <select id="invite-role-select" style="width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);font-size:15px;outline:none">
+            <option value="editor">✏️ Editor — puede ver y editar, no puede borrar</option>
+            <option value="viewer">👁 Viewer — solo puede ver</option>
+          </select>
+        </div>
+        <div id="invite-wrap">
+          <button class="btn-primary" style="margin-bottom:0" id="btn-gen-invite">Generar link de invitación</button>
+        </div>
+      </div>
+      <div id="equipo-pendientes"></div>
+      <div id="equipo-activos"></div>
     </div>
     <div class="section" id="section-configuracion">
       <div class="sec-header"><div class="sec-title">Mi Empresa</div></div>
@@ -767,7 +851,7 @@ input,select,button,textarea{font-family:var(--font)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,GoogleAuthProvider,signInWithPopup,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,doc,addDoc,getDocs,getDoc,updateDoc,deleteDoc,setDoc,query,where,orderBy,serverTimestamp,Timestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // 🔧 FIREBASE CONFIG — reemplazar con datos reales del proyecto SecurePro
@@ -784,16 +868,23 @@ const ADMIN_PIN="1990";
 
 const fbApp=initializeApp(FB);
 const auth=getAuth(fbApp);
+setPersistence(auth,browserLocalPersistence).catch(()=>{});
 const db=getFirestore(fbApp);
 
 // ── ESTADO ────────────────────────────────────────────────
 let me=null,userDoc=null;
-let clients={},presupuestos={},products={},events={},seguimiento={};
+let negocioId=null,myRole="owner",negocioStatus="demo"; // owner | editor | viewer
+let clients={},presupuestos={},products={},events={},seguimiento={},equipo=[];
 let presupItems=[],currentViewPresupId=null,currentFichaClientId=null;
 let calDate=new Date(),currentSection="dashboard";
 let logoTaps=0,logoTimer=null,pinBuf="";
 let isRegister=false;
 let empresa=JSON.parse(localStorage.getItem("sp-empresa")||"{}");
+const _inviteCode=new URLSearchParams(window.location.search).get("invite");
+let activeInvite=_inviteCode?{code:_inviteCode,negocioId:null,ownerUid:null,rol:null}:null;
+function canEdit(){return myRole==="owner"||myRole==="editor";}
+function canDelete(){return myRole==="owner";}
+function isOwner(){return myRole==="owner";}
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const MESES_CORTO=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 const PROD_TYPES={camara:"📷 Cámara",alarma:"🔔 Alarma/Sensor",dvr:"🖥 DVR/NVR",acceso:"🚪 Acceso",cerco:"⚡ Cerco",manoobra:"🔧 Mano de obra",otro:"📦 Otro"};
@@ -956,6 +1047,14 @@ document.getElementById("admin-users-list").addEventListener("click",async e=>{
   }
   if(act&&confirm("¿Activar cuenta completa?")){
     await updateDoc(doc(db,"usuarios",act.dataset.uid),{status:"activo",demoExpiry:null});
+    // Si el usuario activado es owner de un negocio, propagar el activo a todo su equipo
+    try{
+      const uSnap=await getDoc(doc(db,"usuarios",act.dataset.uid));
+      const uData=uSnap.data();
+      if(uData?.negocioId&&uData?.rol==="owner"){
+        await updateDoc(doc(db,"negocios",uData.negocioId),{status:"activo"});
+      }
+    }catch(e){console.error("No se pudo propagar el activo al negocio:",e);}
     toast("Cuenta activada","ok");await loadAdminUsers();
   }
 });
@@ -987,6 +1086,7 @@ function getDemoRestante(data){
 
 function checkDemo(){
   if(!userDoc)return;
+  if(!isOwner()&&negocioStatus==="activo")return; // hereda activación del dueño
   const restante=getDemoRestante(userDoc);
   if(restante===Infinity)return;
   if(restante<=0){document.getElementById('demo-wall').classList.add('open');return;}
@@ -1003,34 +1103,136 @@ document.getElementById('btn-demo-logout').addEventListener('click',()=>signOut(
 
 // ── AUTH STATE ────────────────────────────────────────────
 onAuthStateChanged(auth,async user=>{
+  if(activeInvite&&!user)return; // No pisar la pantalla de invitación mientras se procesa
+
   if(user){
     me=user;
     const userRef=doc(db,"usuarios",user.uid);
-    const snap=await getDoc(userRef);
+    let snap=await getDoc(userRef);
+
     if(!snap.exists()){
-      // Usuario nuevo — crear con demo
+      // Usuario completamente nuevo (sin invitación activa) — crea su propio negocio como owner
+      const newNegRef=await addDoc(collection(db,"negocios"),{ownerUid:user.uid,nombre:"",createdAt:serverTimestamp()});
       await setDoc(userRef,{
-        uid:user.uid,email:user.email,banned:false,
-        status:'demo',demoStart:serverTimestamp(),
+        uid:user.uid,email:user.email,banned:false,rol:"owner",
+        negocioId:newNegRef.id,estado:"aprobado",
+        status:"demo",demoStart:serverTimestamp(),
         createdAt:serverTimestamp()
       });
+      snap=await getDoc(userRef);
     } else {
-      // Usuario existente — actualizar email sin tocar status/demo
       await setDoc(userRef,{uid:user.uid,email:user.email,updatedAt:serverTimestamp()},{merge:true});
+      snap=await getDoc(userRef);
     }
-    userDoc=(await getDoc(userRef)).data();
+
+    userDoc=snap.data();
     if(userDoc.banned){toast("Cuenta suspendida","err");await signOut(auth);return;}
+
+    // Migración suave: usuarios viejos sin negocioId (de antes de este cambio) — crear su negocio propio
+    if(!userDoc.negocioId){
+      const newNegRef=await addDoc(collection(db,"negocios"),{ownerUid:user.uid,nombre:"",createdAt:serverTimestamp()});
+      await setDoc(userRef,{uid:user.uid,negocioId:newNegRef.id,rol:"owner",estado:"aprobado"},{merge:true});
+      userDoc=(await getDoc(userRef)).data();
+    }
+
+    negocioId=userDoc.negocioId;
+    myRole=userDoc.rol||"owner";
+
+    if(userDoc.estado==="pendiente"){
+      showScreen("screen-pending");
+      return;
+    }
+
+    // El status (demo/activo) del NEGOCIO manda para todo el equipo, no solo el del usuario individual
+    if(isOwner()){
+      negocioStatus=userDoc.status||"demo";
+    } else {
+      try{
+        const negSnap=await getDoc(doc(db,"negocios",negocioId));
+        negocioStatus=negSnap.exists()&&negSnap.data().status==="activo"?"activo":"demo";
+      }catch(e){negocioStatus="demo";}
+    }
+
     document.getElementById("user-badge").textContent=user.email;
+    document.getElementById("nav-equipo").style.display=isOwner()?"":"none";
+    document.body.classList.toggle("role-viewer",myRole==="viewer");
+    document.body.classList.toggle("role-readonly",!canEdit());
     showScreen("screen-app");updateHeaderEmpresa();
     await loadData();
     showSection("dashboard");
     checkDemo();
   } else {
-    me=null;userDoc=null;clients={};presupuestos={};products={};events={};seguimiento={};
+    me=null;userDoc=null;negocioId=null;myRole="owner";
+    clients={};presupuestos={};products={};events={};seguimiento={};equipo=[];
+    document.body.classList.remove("role-readonly","role-viewer");
     document.getElementById('demo-wall').classList.remove('open');
-    showScreen("screen-login");
+    if(!activeInvite)showScreen("screen-login");
   }
 });
+
+// ── DETECCIÓN DE LINK DE INVITACIÓN ────────────────────────
+if(_inviteCode){
+  showScreen("screen-invite");
+  (async()=>{
+    try{
+      const invSnap=await getDoc(doc(db,"invitaciones",_inviteCode));
+      if(!invSnap.exists()){
+        document.getElementById("invite-neg-nombre").textContent="Link inválido";
+        document.getElementById("invite-expired-msg").style.display="block";
+        document.getElementById("invite-valid-wrap").style.display="none";
+        activeInvite=null;return;
+      }
+      const inv=invSnap.data();
+      const expirado=inv.expiry?.toMillis?.()<Date.now()||inv.usado===true;
+      const negSnap=await getDoc(doc(db,"negocios",inv.negocioId));
+      const neg=negSnap.exists()?negSnap.data():{nombre:"este negocio"};
+      const rolLabel=inv.rol==="viewer"?"👁 Viewer (solo lectura)":"✏️ Editor";
+      document.getElementById("invite-neg-nombre").textContent=neg.nombre||"Equipo de seguridad";
+      document.getElementById("invite-neg-sub").textContent=`Fuiste invitado a unirte como ${rolLabel}`;
+      document.getElementById("invite-role-badge").textContent="✅ Invitación válida — "+rolLabel;
+      activeInvite={code:_inviteCode,negocioId:inv.negocioId,ownerUid:inv.ownerUid,rol:inv.rol||"editor"};
+      if(expirado){
+        document.getElementById("invite-expired-msg").style.display="block";
+        document.getElementById("invite-valid-wrap").style.display="none";
+        activeInvite=null;
+      }
+    }catch(e){
+      document.getElementById("invite-neg-nombre").textContent="Error al cargar";
+      document.getElementById("invite-expired-msg").style.display="block";
+      document.getElementById("invite-valid-wrap").style.display="none";
+      activeInvite=null;
+    }
+  })();
+}
+
+document.getElementById("btn-inv-cancel").addEventListener("click",()=>{
+  activeInvite=null;window.history.replaceState({},"",window.location.pathname);showScreen("screen-login");
+});
+document.getElementById("btn-inv-register").addEventListener("click",async()=>{
+  if(!activeInvite)return;
+  const email=document.getElementById("inv-email").value.trim();
+  const pass=document.getElementById("inv-pass").value;
+  const errEl=document.getElementById("inv-err");errEl.style.display="none";
+  if(!email||!pass){errEl.textContent="Completá todos los campos";errEl.style.display="block";return;}
+  const btn=document.getElementById("btn-inv-register");btn.disabled=true;btn.textContent="Registrando...";
+  try{
+    await updateDoc(doc(db,"invitaciones",activeInvite.code),{usado:true,usadoPor:email,usadoAt:serverTimestamp()});
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await setDoc(doc(db,"usuarios",cred.user.uid),{
+      uid:cred.user.uid,email,rol:activeInvite.rol,negocioId:activeInvite.negocioId,
+      estado:"pendiente",banned:false,
+      status:"demo",demoStart:serverTimestamp(),createdAt:serverTimestamp()
+    });
+    window.history.replaceState({},"",window.location.pathname);
+    activeInvite=null;
+    // onAuthStateChanged se encarga del resto (va a screen-pending)
+  }catch(e){
+    const msgs={"auth/email-already-in-use":"Ya existe cuenta con ese email.","auth/weak-password":"Mínimo 6 caracteres."};
+    errEl.textContent=msgs[e.code]||"Error al registrarse.";errEl.style.display="block";
+    btn.disabled=false;btn.textContent="Unirme al equipo →";
+  }
+});
+document.getElementById("btn-pending-logout").addEventListener("click",()=>signOut(auth));
 
 // ── AUTH ACTIONS ──────────────────────────────────────────
 document.getElementById("toggle-mode").addEventListener("click",()=>{
@@ -1064,19 +1266,52 @@ document.getElementById("btn-theme").addEventListener("click",toggleTheme);
 
 // ── CARGAR DATOS ──────────────────────────────────────────
 async function loadData(){
-  const uid=me.uid;
-  const [cSnap,pSnap,prSnap,eSnap,sSnap]=await Promise.all([
-    getDocs(query(collection(db,"clientes"),where("uid","==",uid),orderBy("createdAt","desc"))),
-    getDocs(query(collection(db,"presupuestos"),where("uid","==",uid),orderBy("createdAt","desc"))),
-    getDocs(query(collection(db,"productos"),where("uid","==",uid),orderBy("type","asc"))),
-    getDocs(query(collection(db,"eventos"),where("uid","==",uid),orderBy("date","asc"))),
-    getDocs(query(collection(db,"seguimiento"),where("uid","==",uid)))
-  ]);
+  const negId=negocioId;
+
+  async function safeLoad(name,q1,fallbackQ){
+    try{
+      return await getDocs(q1);
+    }catch(e){
+      console.error(`Error cargando ${name} (probablemente falta índice compuesto):`,e);
+      if(fallbackQ){
+        try{return await getDocs(fallbackQ);}
+        catch(e2){console.error(`Fallback de ${name} también falló:`,e2);toast(`No se pudo cargar ${name}`,"err");return{forEach:()=>{}};}
+      }
+      toast(`No se pudo cargar ${name}`,"err");
+      return{forEach:()=>{}};
+    }
+  }
+
+  const tasks=[
+    safeLoad("clientes",
+      query(collection(db,"clientes"),where("negocioId","==",negId),orderBy("createdAt","desc")),
+      query(collection(db,"clientes"),where("negocioId","==",negId))),
+    safeLoad("presupuestos",
+      query(collection(db,"presupuestos"),where("negocioId","==",negId),orderBy("createdAt","desc")),
+      query(collection(db,"presupuestos"),where("negocioId","==",negId))),
+    safeLoad("productos",
+      query(collection(db,"productos"),where("negocioId","==",negId),orderBy("type","asc")),
+      query(collection(db,"productos"),where("negocioId","==",negId))),
+    safeLoad("eventos",
+      query(collection(db,"eventos"),where("negocioId","==",negId),orderBy("date","asc")),
+      query(collection(db,"eventos"),where("negocioId","==",negId))),
+    safeLoad("seguimiento",
+      query(collection(db,"seguimiento"),where("negocioId","==",negId)),
+      null)
+  ];
+  if(isOwner()){
+    tasks.push(safeLoad("equipo",query(collection(db,"usuarios"),where("negocioId","==",negId)),null));
+  }
+  const results=await Promise.all(tasks);
+  const [cSnap,pSnap,prSnap,eSnap,sSnap]=results;
   clients={};cSnap.forEach(d=>clients[d.id]={id:d.id,...d.data()});
   presupuestos={};pSnap.forEach(d=>presupuestos[d.id]={id:d.id,...d.data()});
   products={};prSnap.forEach(d=>products[d.id]={id:d.id,...d.data()});
   events={};eSnap.forEach(d=>events[d.id]={id:d.id,...d.data()});
   seguimiento={};sSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!seguimiento[s.clientId])seguimiento[s.clientId]=[];seguimiento[s.clientId].push(s);});
+  if(isOwner()&&results[5]){
+    equipo=[];results[5].forEach(d=>equipo.push({id:d.id,...d.data()}));
+  }
 }
 
 // ── NAVEGACIÓN ────────────────────────────────────────────
@@ -1086,13 +1321,14 @@ function showSection(name){
   document.getElementById("section-"+name).classList.add("active");
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.section===name));
   const fab=document.getElementById("main-fab");
-  fab.style.display=["dashboard","configuracion"].includes(name)?"none":"flex";
+  fab.style.display=["dashboard","configuracion","equipo"].includes(name)?"none":"flex";
   if(name==="dashboard")renderDashboard();
   else if(name==="clientes")renderClients();
   else if(name==="presupuestos")renderPresupuestos();
   else if(name==="catalogo")renderCatalogo();
   else if(name==="calendario"){renderCalendar();renderEvents();}
   else if(name==="configuracion")loadConfigForm();
+  else if(name==="equipo")renderEquipo();
 }
 document.querySelectorAll(".nav-btn[data-section]").forEach(b=>b.addEventListener("click",()=>showSection(b.dataset.section)));
 document.getElementById("main-fab").addEventListener("click",()=>{
@@ -1204,7 +1440,7 @@ document.getElementById("save-seg").addEventListener("click",async()=>{
   if(!fecha){toast("La fecha es obligatoria","err");return;}
   if(tipo==="otro"&&!document.getElementById("seg-tipo-otro").value.trim()){toast("Especificá el tipo de tarea","err");return;}
   const cid=document.getElementById("seg-client-id").value;const existingId=document.getElementById("seg-id").value;
-  const data={tipo,tipoCustom:document.getElementById("seg-tipo-otro").value.trim(),fecha,recordatorio:document.getElementById("seg-recordatorio").value,notas:document.getElementById("seg-notas").value.trim(),clientId:cid,uid:me.uid};
+  const data={tipo,tipoCustom:document.getElementById("seg-tipo-otro").value.trim(),fecha,recordatorio:document.getElementById("seg-recordatorio").value,notas:document.getElementById("seg-notas").value.trim(),clientId:cid,negocioId,uid:me.uid};
   if(!seguimiento[cid])seguimiento[cid]=[];const arr=seguimiento[cid];
   try{
     if(existingId){await updateDoc(doc(db,"seguimiento",existingId),data);const idx=arr.findIndex(s=>s.id===existingId);if(idx>=0)arr[idx]={...arr[idx],...data};}
@@ -1352,7 +1588,7 @@ document.getElementById("save-client").addEventListener("click",async()=>{
         notes:document.getElementById("det-acc-notes").value.trim()
       }
     },
-    uid:me.uid
+    negocioId,uid:me.uid
   };
   const btn=document.getElementById("save-client");btn.disabled=true;btn.textContent="Guardando...";
   try{
@@ -1482,7 +1718,7 @@ document.getElementById("save-presup").addEventListener("click",async()=>{
   const subtotal=presupItems.reduce((s,item)=>s+item.precio*(1+(item.adj||0)/100)*item.qty,0);
   const adjPct=parseInt(document.getElementById("total-adj").value||0);
   const total=subtotal*(1+adjPct/100);
-  const data={client,date:document.getElementById("p-date").value,notes:document.getElementById("p-notes").value.trim(),items:JSON.parse(JSON.stringify(presupItems)),subtotal,totalAdj:adjPct,total,uid:me.uid};
+  const data={client,date:document.getElementById("p-date").value,notes:document.getElementById("p-notes").value.trim(),items:JSON.parse(JSON.stringify(presupItems)),subtotal,totalAdj:adjPct,total,negocioId,uid:me.uid};
   const btn=document.getElementById("save-presup");btn.disabled=true;btn.textContent="Guardando...";
   try{
     if(id){await updateDoc(doc(db,"presupuestos",id),data);presupuestos[id]={id,...data};}
@@ -1584,7 +1820,7 @@ document.getElementById("save-product").addEventListener("click",async()=>{
   if(!nombre||!precio){toast("Nombre y precio son obligatorios","err");return;}
   const id=document.getElementById("prod-id").value;
   const type=document.getElementById("prod-type").value;
-  const data={type,marca:document.getElementById("prod-marca").value.trim(),nombre,precio,notas:document.getElementById("prod-notas").value.trim(),uid:me.uid};
+  const data={type,marca:document.getElementById("prod-marca").value.trim(),nombre,precio,notas:document.getElementById("prod-notas").value.trim(),negocioId,uid:me.uid};
   if(type==="camara"){data.mp=document.getElementById("prod-mp")?.value||"";data.ubicacion=document.getElementById("prod-ubicacion")?.value||"";}
   else if(type==="alarma"){data.componente=document.getElementById("prod-componente")?.value||"";}
   else if(type==="dvr"){data.canales=document.getElementById("prod-canales")?.value||"";}
@@ -1660,7 +1896,7 @@ document.getElementById("save-event").addEventListener("click",async()=>{
   const date=document.getElementById("ev-date").value;
   if(!title||!date){toast("Título y fecha son obligatorios","err");return;}
   const id=document.getElementById("ev-id").value;
-  const data={title,date,time:document.getElementById("ev-time").value,client:document.getElementById("ev-client").value.trim(),notes:document.getElementById("ev-notes").value.trim(),uid:me.uid};
+  const data={title,date,time:document.getElementById("ev-time").value,client:document.getElementById("ev-client").value.trim(),notes:document.getElementById("ev-notes").value.trim(),negocioId,uid:me.uid};
   const btn=document.getElementById("save-event");btn.disabled=true;btn.textContent="Guardando...";
   try{
     if(id){await updateDoc(doc(db,"eventos",id),data);events[id]={id,...data};}
@@ -1684,57 +1920,221 @@ document.getElementById("btn-google").addEventListener("click",async()=>{
   }
   btn.disabled=false;
 });
+
+// ── EQUIPO ──────────────────────────────────────────────────
+function renderEquipo(){
+  const pendientes=equipo.filter(e=>e.estado==="pendiente"&&e.id!==me.uid);
+  const activos=equipo.filter(e=>e.estado==="aprobado"&&e.id!==me.uid);
+
+  const elPend=document.getElementById("equipo-pendientes");
+  const elAct=document.getElementById("equipo-activos");
+
+  if(pendientes.length){
+    elPend.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 10px">⏳ Pendientes de aprobación</div>`+
+      pendientes.map(e=>equipoCardHTML(e,true)).join("");
+    elPend.querySelectorAll("[data-aprobar]").forEach(b=>b.addEventListener("click",()=>aprobarMiembro(b.dataset.aprobar)));
+    elPend.querySelectorAll("[data-rechazar]").forEach(b=>b.addEventListener("click",()=>rechazarMiembro(b.dataset.rechazar)));
+  } else elPend.innerHTML="";
+
+  if(activos.length){
+    elAct.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 10px">✅ Equipo activo</div>`+
+      activos.map(e=>equipoCardHTML(e,false)).join("");
+    elAct.querySelectorAll("[data-quitar]").forEach(b=>b.addEventListener("click",()=>quitarMiembro(b.dataset.quitar)));
+    elAct.querySelectorAll("[data-rol]").forEach(sel=>sel.addEventListener("change",()=>cambiarRol(sel.dataset.rol,sel.value)));
+  } else if(!pendientes.length){
+    elAct.innerHTML=emptyHTML("👥","Sin técnicos en el equipo","Generá un link de invitación arriba");
+  } else elAct.innerHTML="";
+}
+function equipoCardHTML(e,esPendiente){
+  const rolLabel=e.rol==="viewer"?"👁 Viewer":"✏️ Editor";
+  return`<div class="equipo-card">
+    <div class="equipo-av">${sanitizeHTML((e.email||"?").substring(0,2).toUpperCase())}</div>
+    <div class="equipo-info">
+      <div class="equipo-email">${sanitizeHTML(e.email)}</div>
+      <div class="equipo-rol">${esPendiente?"Esperando aprobación":rolLabel}</div>
+    </div>
+    ${esPendiente?
+      `<div class="equipo-actions">
+        <button class="btn-sm primary" data-aprobar="${e.id}">✓ Aprobar</button>
+        <button class="btn-sm danger" data-rechazar="${e.id}">✕</button>
+      </div>`:
+      `<div class="equipo-actions">
+        <select class="btn-sm" data-rol="${e.id}" style="padding:6px 8px">
+          <option value="editor"${e.rol==="editor"?" selected":""}>Editor</option>
+          <option value="viewer"${e.rol==="viewer"?" selected":""}>Viewer</option>
+        </select>
+        <button class="btn-sm danger" data-quitar="${e.id}">🗑</button>
+      </div>`}
+  </div>`;
+}
+async function aprobarMiembro(uid){
+  try{
+    await updateDoc(doc(db,"usuarios",uid),{estado:"aprobado"});
+    const m=equipo.find(e=>e.id===uid);if(m)m.estado="aprobado";
+    toast("Técnico aprobado","ok");renderEquipo();
+  }catch(e){toast("Error al aprobar","err");}
+}
+async function rechazarMiembro(uid){
+  if(!confirm("¿Rechazar y eliminar esta solicitud?"))return;
+  try{
+    await deleteDoc(doc(db,"usuarios",uid));
+    equipo=equipo.filter(e=>e.id!==uid);
+    toast("Solicitud rechazada");renderEquipo();
+  }catch(e){toast("Error al rechazar","err");}
+}
+async function quitarMiembro(uid){
+  if(!confirm("¿Quitar a este técnico del equipo? Va a perder el acceso."))return;
+  try{
+    await updateDoc(doc(db,"usuarios",uid),{estado:"pendiente",banned:true});
+    equipo=equipo.filter(e=>e.id!==uid);
+    toast("Técnico removido del equipo");renderEquipo();
+  }catch(e){toast("Error al quitar técnico","err");}
+}
+async function cambiarRol(uid,nuevoRol){
+  try{
+    await updateDoc(doc(db,"usuarios",uid),{rol:nuevoRol});
+    const m=equipo.find(e=>e.id===uid);if(m)m.rol=nuevoRol;
+    toast("Rol actualizado","ok");
+  }catch(e){toast("Error al cambiar el rol","err");renderEquipo();}
+}
+document.getElementById("btn-gen-invite").addEventListener("click",async()=>{
+  const rol=document.getElementById("invite-role-select").value;
+  const btn=document.getElementById("btn-gen-invite");
+  btn.disabled=true;btn.textContent="Generando...";
+  try{
+    const expiry=new Date(Date.now()+24*60*60*1000);
+    const code=Math.random().toString(36).substring(2,10)+Date.now().toString(36);
+    await setDoc(doc(db,"invitaciones",code),{negocioId,ownerUid:me.uid,rol,expiry:Timestamp.fromDate(expiry),usado:false,createdAt:serverTimestamp()});
+    const baseUrl=window.location.origin+window.location.pathname;
+    const link=`${baseUrl}?invite=${code}`;
+    const wrap=document.getElementById("invite-wrap");
+    const horaExp=expiry.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+    const rolLabel=rol==="viewer"?"Viewer (solo lectura)":"Editor";
+    const waText=encodeURIComponent(`¡Hola! Te invito a unirte al equipo de SecurePro como ${rolLabel}. El link es válido por 24 horas:\n${link}`);
+    wrap.innerHTML=`
+      <div class="invite-row">
+        <div class="invite-link-box">${link}</div>
+        <button class="btn-copy-link" data-copy="${link}">📋 Copiar</button>
+      </div>
+      <button class="btn-wa-invite" data-wa="${waText}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.055 23.454a.75.75 0 0 0 .919.919l5.6-1.469A11.951 11.951 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.951 9.951 0 0 1-5.073-1.386l-.361-.214-3.754.984.998-3.648-.235-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Compartir por WhatsApp
+      </button>
+      <div class="invite-expiry">⏰ Vence hoy a las ${horaExp} · Rol: ${rolLabel}</div>
+      <div style="margin-top:10px"><button class="btn-primary" style="background:var(--surface2);color:var(--muted);border:1.5px solid var(--border);box-shadow:none;font-size:13px" id="btn-gen-invite-new">🔄 Generar nuevo link</button></div>`;
+    wrap.querySelector("[data-copy]")?.addEventListener("click",e=>{
+      navigator.clipboard.writeText(e.target.dataset.copy).then(()=>toast("Link copiado","ok")).catch(()=>{
+        const ta=document.createElement("textarea");ta.value=e.target.dataset.copy;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("Link copiado","ok");
+      });
+    });
+    wrap.querySelector("[data-wa]")?.addEventListener("click",e=>{window.open(`https://wa.me/?text=${e.target.closest("[data-wa]").dataset.wa}`,"_blank");});
+    wrap.querySelector("#btn-gen-invite-new")?.addEventListener("click",()=>renderEquipo());
+  }catch(e){toast("Error al generar el link","err");btn.disabled=false;btn.textContent="Generar link de invitación";}
+});
 </script>
 
 <!--
-FIRESTORE SECURITY RULES
+FIRESTORE SECURITY RULES — Modelo de negocios con roles (owner/editor/viewer)
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Función helper: trae el documento de usuario del solicitante
+    function miUsuario() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function miNegocio() {
+      return miUsuario().negocioId;
+    }
+    function miRol() {
+      return miUsuario().rol;
+    }
+    function estoyAprobado() {
+      return miUsuario().estado == 'aprobado';
+    }
+    function puedoEditar() {
+      return miRol() == 'owner' || miRol() == 'editor';
+    }
+    function puedoBorrar() {
+      return miRol() == 'owner';
+    }
+
     match /usuarios/{userId} {
-      allow read, write: if request.auth != null;
+      // Cualquiera autenticado puede leer/crear su propio doc de usuario (necesario para el flujo de registro/login)
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && (
+        request.auth.uid == userId ||
+        (estoyAprobado() && miRol() == 'owner' && resource.data.negocioId == miNegocio())
+      );
+      allow delete: if request.auth != null && estoyAprobado() && miRol() == 'owner' && resource.data.negocioId == miNegocio();
+    }
+
+    match /negocios/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      // El panel admin (protegido por PIN en la app) necesita poder activar cualquier negocio
+      allow update: if request.auth != null;
+    }
+
+    match /invitaciones/{id} {
+      // Lectura pública (necesaria para que alguien sin cuenta todavía pueda ver la invitación antes de registrarse)
+      allow read: if true;
+      allow create: if request.auth != null && estoyAprobado() && miRol() == 'owner';
+      allow update: if request.auth != null; // marcar como usada desde el registro
     }
 
     match /clientes/{id} {
-      allow read, write: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null;
+      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
     }
 
     match /presupuestos/{id} {
-      allow read, write: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null;
+      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
     }
 
     match /productos/{id} {
-      allow read, write: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null;
+      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
     }
 
     match /eventos/{id} {
-      allow read, write: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null;
+      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
     }
 
     match /seguimiento/{id} {
-      allow read, write: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null;
+      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
     }
   }
 }
 
-ÍNDICES COMPUESTOS
-1. clientes | uid ASC, createdAt DESC
-2. presupuestos | uid ASC, createdAt DESC
-3. productos | uid ASC, type ASC
-4. eventos | uid ASC, date ASC
-5. seguimiento | uid ASC (sin índice compuesto necesario, no usa orderBy)
+ÍNDICES COMPUESTOS (Firestore > Índices > Compuestos)
+1. clientes      | negocioId ASC, createdAt DESC
+2. presupuestos  | negocioId ASC, createdAt DESC
+3. productos     | negocioId ASC, type ASC
+4. eventos       | negocioId ASC, date ASC
+5. seguimiento   | negocioId ASC (sin índice compuesto necesario, no usa orderBy)
+6. usuarios      | negocioId ASC (para cargar el equipo)
+
+NOTA IMPORTANTE PARA RUBÉN:
+Estas reglas reemplazan completamente a las anteriores (que filtraban por uid).
+Ahora el filtrado es por negocioId, y además controlan en el SERVIDOR (no solo
+en la interfaz) que un viewer no pueda escribir nada y que un editor no pueda
+borrar — así nadie puede saltarse los permisos abriendo la consola del navegador.
 -->
 </body>
 </html>
