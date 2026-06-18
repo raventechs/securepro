@@ -1142,17 +1142,8 @@ document.getElementById('btn-demo-logout').addEventListener('click',()=>signOut(
 // ── AUTH STATE ────────────────────────────────────────────
 authReady.then(()=>{
 onAuthStateChanged(auth,async user=>{
-  if(activeInvite&&!user)return;
-  if(joinInProgress)return; // Segundo disparo de onAuthStateChanged durante el join — ignorar
-
-  // Si hay invite activo y el usuario acaba de loguearse, unirlo al negocio
-  if(activeInvite&&user){
-    me=user;
-    joinInProgress=true;
-    await joinNegocioConUsuarioActual();
-    joinInProgress=false;
-    return;
-  }
+  // Si hay un invite en proceso, este listener no toca nada
+  if(_inviteCode)return;
 
   if(user){
     me=user;
@@ -1160,13 +1151,11 @@ onAuthStateChanged(auth,async user=>{
     let snap=await getDoc(userRef);
 
     if(!snap.exists()){
-      // Usuario completamente nuevo (sin invitación activa) — crea su propio negocio como owner
       const newNegRef=await addDoc(collection(db,"negocios"),{ownerUid:user.uid,nombre:"",createdAt:serverTimestamp()});
       await setDoc(userRef,{
         uid:user.uid,email:user.email,banned:false,rol:"owner",
         negocioId:newNegRef.id,estado:"aprobado",
-        status:"demo",demoStart:serverTimestamp(),
-        createdAt:serverTimestamp()
+        status:"demo",demoStart:serverTimestamp(),createdAt:serverTimestamp()
       });
       snap=await getDoc(userRef);
     } else {
@@ -1177,9 +1166,7 @@ onAuthStateChanged(auth,async user=>{
     userDoc=snap.data();
     if(userDoc.banned){toast("Cuenta suspendida","err");await signOut(auth);return;}
 
-    // Migración suave: usuarios viejos sin negocioId — crear su negocio propio
-    // IMPORTANTE: solo si el usuario NO acaba de llegar por un invite (que puede estar escribiendo en paralelo)
-    if(!userDoc.negocioId&&!activeInvite){
+    if(!userDoc.negocioId){
       const newNegRef=await addDoc(collection(db,"negocios"),{ownerUid:user.uid,nombre:"",createdAt:serverTimestamp()});
       await setDoc(userRef,{uid:user.uid,negocioId:newNegRef.id,rol:"owner",estado:"aprobado"},{merge:true});
       userDoc=(await getDoc(userRef)).data();
@@ -1188,12 +1175,8 @@ onAuthStateChanged(auth,async user=>{
     negocioId=userDoc.negocioId;
     myRole=userDoc.rol||"owner";
 
-    if(userDoc.estado==="pendiente"){
-      showScreen("screen-pending");
-      return;
-    }
+    if(userDoc.estado==="pendiente"){showScreen("screen-pending");return;}
 
-    // El status (demo/activo) del NEGOCIO manda para todo el equipo, no solo el del usuario individual
     if(isOwner()){
       negocioStatus=userDoc.status||"demo";
     } else {
@@ -1208,49 +1191,46 @@ onAuthStateChanged(auth,async user=>{
     document.body.classList.toggle("role-viewer",myRole==="viewer");
     document.body.classList.toggle("role-readonly",!canEdit());
     showScreen("screen-app");updateHeaderEmpresa();
-    await loadData();
-    showSection("dashboard");
-    checkDemo();
+    await loadData();showSection("dashboard");checkDemo();
   } else {
     me=null;userDoc=null;negocioId=null;myRole="owner";
     clients={};presupuestos={};products={};events={};seguimiento={};equipo=[];
     if(unsubEquipo){unsubEquipo();unsubEquipo=null;}
     document.body.classList.remove("role-readonly","role-viewer");
     document.getElementById('demo-wall').classList.remove('open');
-    if(!activeInvite)showScreen("screen-login");
+    showScreen("screen-login");
   }
 });
 }); // cierre de authReady.then()
 
-// ── DETECCIÓN DE LINK DE INVITACIÓN ────────────────────────
-// Función helper para unirse al negocio con el usuario actualmente logueado
-async function joinNegocioConUsuarioActual(){
-  if(!activeInvite||!me)return;
-  const btn=document.getElementById("btn-inv-join");
-  if(btn){btn.disabled=true;btn.textContent="Uniéndome...";}
+// ── INVITACIÓN ────────────────────────────────────────────
+// Función central que hace el join completo — se llama SOLO desde los botones, nunca desde onAuthStateChanged
+async function ejecutarJoin(userFirebase){
+  if(!activeInvite)return;
+  const inv=activeInvite; // copiar referencia antes de cualquier await
   try{
-    // Marcar invitación como usada
-    await updateDoc(doc(db,"invitaciones",activeInvite.code),{usado:true,usadoPor:me.email,usadoAt:serverTimestamp()});
-    // Crear o actualizar el documento del usuario con el negocioId del invite
-    await setDoc(doc(db,"usuarios",me.uid),{
-      uid:me.uid,email:me.email,
-      rol:activeInvite.rol,
-      negocioId:activeInvite.negocioId,
+    // 1. Escribir el documento del usuario completo con el negocioId del invite
+    await setDoc(doc(db,"usuarios",userFirebase.uid),{
+      uid:userFirebase.uid,
+      email:userFirebase.email,
+      rol:inv.rol,
+      negocioId:inv.negocioId,
       estado:"pendiente",
       banned:false,
       status:"demo",
       demoStart:serverTimestamp(),
-      updatedAt:serverTimestamp()
-    },{merge:true});
+      createdAt:serverTimestamp()
+    });
+    // 2. Marcar la invitación como usada
+    await updateDoc(doc(db,"invitaciones",inv.code),{usado:true,usadoPor:userFirebase.email,usadoAt:serverTimestamp()});
+    // 3. Limpiar URL y activeInvite
     window.history.replaceState({},"",window.location.pathname);
     activeInvite=null;
-    userDoc=(await getDoc(doc(db,"usuarios",me.uid))).data();
-    negocioId=userDoc.negocioId;
+    // 4. Ir a pantalla de pendiente
     showScreen("screen-pending");
   }catch(e){
-    console.error("Error en joinNegocioConUsuarioActual:",e);
-    toast("Error al unirte al equipo. Intentá de nuevo.","err");
-    if(btn){btn.disabled=false;btn.textContent="Unirme al equipo →";}
+    console.error("Error en ejecutarJoin:",e);
+    toast("Error al unirte al equipo: "+e.message,"err");
   }
 }
 
@@ -1263,10 +1243,15 @@ if(_inviteCode){
         document.getElementById("invite-neg-nombre").textContent="Link inválido";
         document.getElementById("invite-expired-msg").style.display="block";
         document.getElementById("invite-valid-wrap").style.display="none";
-        activeInvite=null;return;
+        return;
       }
       const inv=invSnap.data();
-      const expirado=inv.expiry?.toMillis?.()<Date.now()||inv.usado===true;
+      if(inv.expiry?.toMillis?.()<Date.now()||inv.usado===true){
+        document.getElementById("invite-expired-msg").style.display="block";
+        document.getElementById("invite-valid-wrap").style.display="none";
+        document.getElementById("invite-already-logged").style.display="none";
+        return;
+      }
       const negSnap=await getDoc(doc(db,"negocios",inv.negocioId));
       const neg=negSnap.exists()?negSnap.data():{nombre:"este negocio"};
       const rolLabel=inv.rol==="viewer"?"👁 Viewer (solo lectura)":"✏️ Editor";
@@ -1274,28 +1259,20 @@ if(_inviteCode){
       document.getElementById("invite-neg-sub").textContent=`Fuiste invitado a unirte como ${rolLabel}`;
       activeInvite={code:_inviteCode,negocioId:inv.negocioId,ownerUid:inv.ownerUid,rol:inv.rol||"editor"};
 
-      if(expirado){
-        document.getElementById("invite-expired-msg").style.display="block";
-        document.getElementById("invite-valid-wrap").style.display="none";
-        document.getElementById("invite-already-logged").style.display="none";
-        activeInvite=null;return;
-      }
-
-      // Caso 1: ya está logueado — mostrar botón directo
-      if(me){
+      // Verificar si ya hay sesión activa de Firebase
+      const currentUser=auth.currentUser;
+      if(currentUser){
         document.getElementById("invite-valid-wrap").style.display="none";
         document.getElementById("invite-already-logged").style.display="block";
         document.getElementById("invite-role-badge-logged").textContent="✅ Invitación válida — "+rolLabel;
-        document.getElementById("invite-current-email").textContent=me.email;
+        document.getElementById("invite-current-email").textContent=currentUser.email;
       } else {
-        // Caso 2: no logueado — mostrar formulario completo
         document.getElementById("invite-role-badge").textContent="✅ Invitación válida — "+rolLabel;
       }
     }catch(e){
-      document.getElementById("invite-neg-nombre").textContent="Error al cargar";
+      document.getElementById("invite-neg-nombre").textContent="Error al cargar la invitación";
       document.getElementById("invite-expired-msg").style.display="block";
       document.getElementById("invite-valid-wrap").style.display="none";
-      activeInvite=null;
     }
   })();
 }
@@ -1304,16 +1281,22 @@ document.getElementById("btn-inv-cancel").addEventListener("click",()=>{
   activeInvite=null;window.history.replaceState({},"",window.location.pathname);showScreen("screen-login");
 });
 
-// Ya logueado → unirse directo
-document.getElementById("btn-inv-join").addEventListener("click",joinNegocioConUsuarioActual);
+// Ya logueado → join directo
+document.getElementById("btn-inv-join").addEventListener("click",async()=>{
+  const u=auth.currentUser;if(!u||!activeInvite)return;
+  const btn=document.getElementById("btn-inv-join");btn.disabled=true;btn.textContent="Uniéndome...";
+  await ejecutarJoin(u);
+  btn.disabled=false;btn.textContent="Unirme al equipo →";
+});
 
 // Google desde invite
 document.getElementById("btn-inv-google").addEventListener("click",async()=>{
+  if(!activeInvite)return;
   const btn=document.getElementById("btn-inv-google");
   btn.disabled=true;btn.textContent="Conectando...";
   try{
-    await signInWithPopup(auth,new GoogleAuthProvider());
-    // onAuthStateChanged va a setear me — joinNegocioConUsuarioActual se llama desde ahí
+    const result=await signInWithPopup(auth,new GoogleAuthProvider());
+    await ejecutarJoin(result.user); // join inmediato con el user del resultado, sin depender de onAuthStateChanged
   }catch(e){
     const errEl=document.getElementById("inv-err");
     errEl.textContent="Error al iniciar con Google.";errEl.style.display="block";
@@ -1327,10 +1310,10 @@ document.getElementById("inv-toggle-login").addEventListener("click",()=>{
   const loginWrap=document.getElementById("inv-login-wrap");
   const registerBtn=document.getElementById("btn-inv-register");
   const toggleBtn=document.getElementById("inv-toggle-login");
-  const isShowingLogin=loginWrap.style.display==="block";
-  loginWrap.style.display=isShowingLogin?"none":"block";
-  registerBtn.style.display=isShowingLogin?"block":"none";
-  toggleBtn.textContent=isShowingLogin?"Iniciá sesión":"Volver a registrarme";
+  const showing=loginWrap.style.display==="block";
+  loginWrap.style.display=showing?"none":"block";
+  registerBtn.style.display=showing?"block":"none";
+  toggleBtn.textContent=showing?"Iniciá sesión":"Volver a registrarme";
 });
 
 // Login con email desde invite
@@ -1342,8 +1325,8 @@ document.getElementById("btn-inv-login").addEventListener("click",async()=>{
   if(!email||!pass){errEl.textContent="Completá todos los campos";errEl.style.display="block";return;}
   const btn=document.getElementById("btn-inv-login");btn.disabled=true;btn.textContent="Ingresando...";
   try{
-    await signInWithEmailAndPassword(auth,email,pass);
-    // onAuthStateChanged setea me y llama joinNegocioConUsuarioActual
+    const result=await signInWithEmailAndPassword(auth,email,pass);
+    await ejecutarJoin(result.user);
   }catch(e){
     const msgs={"auth/user-not-found":"No existe cuenta con ese email.","auth/wrong-password":"Contraseña incorrecta.","auth/invalid-credential":"Email o contraseña incorrectos."};
     errEl.textContent=msgs[e.code]||"Error al ingresar.";errEl.style.display="block";
@@ -1360,9 +1343,8 @@ document.getElementById("btn-inv-register").addEventListener("click",async()=>{
   if(!email||!pass){errEl.textContent="Completá todos los campos";errEl.style.display="block";return;}
   const btn=document.getElementById("btn-inv-register");btn.disabled=true;btn.textContent="Registrando...";
   try{
-    await updateDoc(doc(db,"invitaciones",activeInvite.code),{usado:true,usadoPor:email,usadoAt:serverTimestamp()});
-    await createUserWithEmailAndPassword(auth,email,pass);
-    // onAuthStateChanged crea el doc de usuario y llama joinNegocioConUsuarioActual
+    const result=await createUserWithEmailAndPassword(auth,email,pass);
+    await ejecutarJoin(result.user);
   }catch(e){
     const msgs={"auth/email-already-in-use":"Ya existe cuenta con ese email. Usá la opción de login.","auth/weak-password":"Mínimo 6 caracteres."};
     errEl.textContent=msgs[e.code]||"Error al registrarse.";errEl.style.display="block";
