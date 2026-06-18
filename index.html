@@ -1173,8 +1173,9 @@ onAuthStateChanged(auth,async user=>{
     userDoc=snap.data();
     if(userDoc.banned){toast("Cuenta suspendida","err");await signOut(auth);return;}
 
-    // Migración suave: usuarios viejos sin negocioId (de antes de este cambio) — crear su negocio propio
-    if(!userDoc.negocioId){
+    // Migración suave: usuarios viejos sin negocioId — crear su negocio propio
+    // IMPORTANTE: solo si el usuario NO acaba de llegar por un invite (que puede estar escribiendo en paralelo)
+    if(!userDoc.negocioId&&!activeInvite){
       const newNegRef=await addDoc(collection(db,"negocios"),{ownerUid:user.uid,nombre:"",createdAt:serverTimestamp()});
       await setDoc(userRef,{uid:user.uid,negocioId:newNegRef.id,rol:"owner",estado:"aprobado"},{merge:true});
       userDoc=(await getDoc(userRef)).data();
