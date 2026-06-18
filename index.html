@@ -868,8 +868,14 @@ const ADMIN_PIN="1990";
 
 const fbApp=initializeApp(FB);
 const auth=getAuth(fbApp);
-setPersistence(auth,browserLocalPersistence).catch(()=>{});
 const db=getFirestore(fbApp);
+
+// Garantizar persistencia local ANTES de registrar cualquier listener de auth.
+// Si esto falla (ej: navegador bloqueando IndexedDB por configuración de privacidad),
+// se loguea para diagnóstico pero la app sigue funcionando igual.
+let authReady=setPersistence(auth,browserLocalPersistence)
+  .then(()=>console.log("✅ Persistencia local de sesión activada correctamente"))
+  .catch(err=>console.error("⚠️ No se pudo activar la persistencia local — la sesión puede no mantenerse entre cierres del navegador:",err));
 
 // ── ESTADO ────────────────────────────────────────────────
 let me=null,userDoc=null;
@@ -1102,6 +1108,7 @@ function checkDemo(){
 document.getElementById('btn-demo-logout').addEventListener('click',()=>signOut(auth));
 
 // ── AUTH STATE ────────────────────────────────────────────
+authReady.then(()=>{
 onAuthStateChanged(auth,async user=>{
   if(activeInvite&&!user)return; // No pisar la pantalla de invitación mientras se procesa
 
@@ -1169,6 +1176,7 @@ onAuthStateChanged(auth,async user=>{
     if(!activeInvite)showScreen("screen-login");
   }
 });
+}); // cierre de authReady.then()
 
 // ── DETECCIÓN DE LINK DE INVITACIÓN ────────────────────────
 if(_inviteCode){
