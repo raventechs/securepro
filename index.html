@@ -911,6 +911,7 @@ let authReady=setPersistence(auth,browserLocalPersistence)
 let me=null,userDoc=null;
 let negocioId=null,myRole="owner",negocioStatus="demo"; // owner | editor | viewer
 let unsubEquipo=null;
+let joinInProgress=false; // Evita que el segundo disparo de onAuthStateChanged pise el join
 let clients={},presupuestos={},products={},events={},seguimiento={},equipo=[];
 let presupItems=[],currentViewPresupId=null,currentFichaClientId=null;
 let calDate=new Date(),currentSection="dashboard";
@@ -1141,12 +1142,15 @@ document.getElementById('btn-demo-logout').addEventListener('click',()=>signOut(
 // ── AUTH STATE ────────────────────────────────────────────
 authReady.then(()=>{
 onAuthStateChanged(auth,async user=>{
-  if(activeInvite&&!user)return; // No pisar la pantalla de invitación mientras se procesa
+  if(activeInvite&&!user)return;
+  if(joinInProgress)return; // Segundo disparo de onAuthStateChanged durante el join — ignorar
 
-  // Si hay invite activo y el usuario acaba de loguearse (Google o email/login), unirlo al negocio
+  // Si hay invite activo y el usuario acaba de loguearse, unirlo al negocio
   if(activeInvite&&user){
     me=user;
+    joinInProgress=true;
     await joinNegocioConUsuarioActual();
+    joinInProgress=false;
     return;
   }
 
