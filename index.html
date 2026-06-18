@@ -901,6 +901,7 @@ let authReady=setPersistence(auth,browserLocalPersistence)
 // ── ESTADO ────────────────────────────────────────────────
 let me=null,userDoc=null;
 let negocioId=null,myRole="owner",negocioStatus="demo"; // owner | editor | viewer
+let unsubEquipo=null;
 let clients={},presupuestos={},products={},events={},seguimiento={},equipo=[];
 let presupItems=[],currentViewPresupId=null,currentFichaClientId=null;
 let calDate=new Date(),currentSection="dashboard";
@@ -1199,6 +1200,7 @@ onAuthStateChanged(auth,async user=>{
   } else {
     me=null;userDoc=null;negocioId=null;myRole="owner";
     clients={};presupuestos={};products={};events={};seguimiento={};equipo=[];
+    if(unsubEquipo){unsubEquipo();unsubEquipo=null;}
     document.body.classList.remove("role-readonly","role-viewer");
     document.getElementById('demo-wall').classList.remove('open');
     if(!activeInvite)showScreen("screen-login");
@@ -1425,6 +1427,8 @@ async function loadData(){
   seguimiento={};sSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!seguimiento[s.clientId])seguimiento[s.clientId]=[];seguimiento[s.clientId].push(s);});
   if(isOwner()&&results[5]){
     equipo=[];results[5].forEach(d=>equipo.push({id:d.id,...d.data()}));
+    // Activar listener en tiempo real para el equipo
+    startEquipoListener(negId);
   }
 }
 
@@ -2036,6 +2040,24 @@ document.getElementById("btn-google").addEventListener("click",async()=>{
 });
 
 // ── EQUIPO ──────────────────────────────────────────────────
+function startEquipoListener(negId){
+  if(unsubEquipo)unsubEquipo();
+  unsubEquipo=onSnapshot(
+    query(collection(db,"usuarios"),where("negocioId","==",negId)),
+    snap=>{
+      equipo=[];snap.forEach(d=>equipo.push({id:d.id,...d.data()}));
+      // Si la sección equipo está activa, re-renderizar automáticamente
+      if(currentSection==="equipo")renderEquipo();
+      // Actualizar badge de pendientes en el nav
+      const pendN=equipo.filter(e=>e.estado==="pendiente"&&e.id!==me?.uid).length;
+      const navEquipo=document.getElementById("nav-equipo");
+      if(navEquipo&&pendN>0)navEquipo.textContent=`👥 Equipo (${pendN})`;
+      else if(navEquipo)navEquipo.textContent="👥 Equipo";
+    },
+    err=>console.error("Error en listener de equipo:",err)
+  );
+}
+
 function renderEquipo(){
   const pendientes=equipo.filter(e=>e.estado==="pendiente"&&e.id!==me.uid);
   const activos=equipo.filter(e=>e.estado==="aprobado"&&e.id!==me.uid);
