@@ -33,6 +33,7 @@
   --green-bg:#052e16;--warn-bg:#1c1000;--red-bg:#3f0f0f;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.hidden{display:none!important}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;transition:background .2s,color .2s}
 input,select,button,textarea{font-family:var(--font)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -926,6 +927,7 @@ let activeInvite=_inviteCode?{code:_inviteCode,negocioId:null,ownerUid:null,rol:
 function canEdit(){return myRole==="owner"||myRole==="editor";}
 function canDelete(){return myRole==="owner";}
 function isOwner(){return myRole==="owner";}
+function tieneEquipo(){return (userDoc?.features?.limiteEmpleados??1) > 1;}
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const MESES_CORTO=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 const PROD_TYPES={camara:"📷 Cámara",alarma:"🔔 Alarma/Sensor",dvr:"🖥 DVR/NVR",acceso:"🚪 Acceso",cerco:"⚡ Cerco",manoobra:"🔧 Mano de obra",otro:"📦 Otro"};
@@ -1020,7 +1022,7 @@ function checkPin(){
   if(pinBuf===ADMIN_PIN){closePin();showScreen("screen-admin");loadAdminUsers();}
   else{document.getElementById("pin-err").style.display="block";pinBuf="";updDots();setTimeout(()=>document.getElementById("pin-err").style.display="none",1500);}
 }
-document.getElementById("btn-pin-close").addEventListener("click",closePin);
+document.getElementById("btn-pin-close").addEventListener("click",()=>closePin());
 document.getElementById("pin-overlay").addEventListener("click",e=>{if(e.target.id==="pin-overlay")closePin();});
 
 // ── ADMIN ─────────────────────────────────────────────────
@@ -1062,6 +1064,11 @@ async function loadAdminUsers(){
         <button class="btn-adel" data-uid="${d.id}">🗑️ Eliminar</button>
       </div>
       ${demoActions}
+      ${u.rol==='owner'?`<div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--muted)">Plan Empresa (límite de empleados):</span>
+        <input type="number" min="1" max="50" value="${u.features?.limiteEmpleados??1}" style="width:56px;padding:6px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--font)" data-lim-uid="${d.id}"/>
+        <button class="btn-alim" data-uid="${d.id}">💾 Guardar</button>
+      </div>`:''}
     </div>`;
   }).join("");
 }
@@ -1075,6 +1082,7 @@ async function loadAdminClients(){
 document.getElementById("admin-users-list").addEventListener("click",async e=>{
   const ban=e.target.closest(".btn-aban");const unban=e.target.closest(".btn-aunban");const del=e.target.closest(".btn-adel[data-uid]");
   const ext=e.target.closest(".btn-aext");const act=e.target.closest(".btn-aact");
+  const lim=e.target.closest(".btn-alim");
   if(ban&&confirm("¿Banear este usuario?")){await updateDoc(doc(db,"usuarios",ban.dataset.uid),{banned:true});toast("Usuario baneado");await loadAdminUsers();}
   if(unban){await updateDoc(doc(db,"usuarios",unban.dataset.uid),{banned:false});toast("Usuario desbaneado");await loadAdminUsers();}
   if(del&&confirm("¿Eliminar este usuario?")){await deleteDoc(doc(db,"usuarios",del.dataset.uid));toast("Usuario eliminado");await loadAdminUsers();}
@@ -1097,6 +1105,17 @@ document.getElementById("admin-users-list").addEventListener("click",async e=>{
       }
     }catch(e){console.error("No se pudo propagar el activo al negocio:",e);}
     toast("Cuenta activada","ok");await loadAdminUsers();
+  }
+  if(lim){
+    const nuevoLimite=parseInt(document.querySelector(`input[data-lim-uid="${lim.dataset.uid}"]`)?.value)||1;
+    try{
+      await updateDoc(doc(db,"usuarios",lim.dataset.uid),{"features.limiteEmpleados":nuevoLimite});
+      toast(`Límite de empleados actualizado a ${nuevoLimite}`,"ok");
+      if(me&&me.uid===lim.dataset.uid){
+        userDoc={...userDoc,features:{...userDoc.features,limiteEmpleados:nuevoLimite}};
+        document.getElementById("nav-equipo").style.display=(isOwner()&&tieneEquipo())?"":"none";
+      }
+    }catch(e){toast("Error al actualizar el límite","err");}
   }
 });
 document.getElementById("admin-clients-list").addEventListener("click",async e=>{
@@ -1158,7 +1177,8 @@ onAuthStateChanged(auth,async user=>{
       await setDoc(userRef,{
         uid:user.uid,email:user.email,banned:false,rol:"owner",
         negocioId:newNegRef.id,estado:"aprobado",
-        status:"demo",demoStart:serverTimestamp(),createdAt:serverTimestamp()
+        status:"demo",demoStart:serverTimestamp(),createdAt:serverTimestamp(),
+        features:{limiteEmpleados:1}
       });
       snap=await getDoc(userRef);
     } else {
@@ -1190,7 +1210,7 @@ onAuthStateChanged(auth,async user=>{
     }
 
     document.getElementById("user-badge").textContent=user.email;
-    document.getElementById("nav-equipo").style.display=isOwner()?"":"none";
+    document.getElementById("nav-equipo").style.display=(isOwner()&&tieneEquipo())?"":"none";
     document.body.classList.toggle("role-viewer",myRole==="viewer");
     document.body.classList.toggle("role-readonly",!canEdit());
     showScreen("screen-app");updateHeaderEmpresa();
@@ -1385,7 +1405,7 @@ document.getElementById("btn-auth").addEventListener("click",async()=>{
 });
 
 document.getElementById("btn-logout").addEventListener("click",()=>signOut(auth));
-document.getElementById("btn-theme").addEventListener("click",toggleTheme);
+document.getElementById("btn-theme").addEventListener("click",()=>toggleTheme());
 
 // ── CARGAR DATOS ──────────────────────────────────────────
 async function loadData(){
@@ -1585,7 +1605,7 @@ function clientRowHTML(c,withActions){
     ${withActions?`<div class="client-actions"><button class="btn-sm btn-edit-client">✏️</button><button class="btn-sm danger btn-del-client">🗑</button></div>`:""}
   </div>`;
 }
-document.getElementById("search-clients").addEventListener("input",renderClients);
+document.getElementById("search-clients").addEventListener("input",()=>renderClients());
 
 async function deleteClient(id){
   if(!confirm("¿Eliminar este cliente?"))return;
@@ -1732,7 +1752,7 @@ function renderPresupuestos(){
   el.innerHTML=list.length===0?emptyHTML("💰","Sin presupuestos","Tocá + para crear uno"):list.map(p=>`<div class="presup-card" data-pid="${p.id}"><div class="presup-icon">💰</div><div class="presup-info"><div class="presup-client">${sanitizeHTML(p.client)}</div><div class="presup-date">${fmtDate(p.date)}</div></div><div class="presup-total">${fmtMoney(p.total)}</div></div>`).join("");
   el.querySelectorAll(".presup-card[data-pid]").forEach(el=>el.addEventListener("click",()=>viewPresup(el.dataset.pid)));
 }
-document.getElementById("search-presup").addEventListener("input",renderPresupuestos);
+document.getElementById("search-presup").addEventListener("input",()=>renderPresupuestos());
 
 function openPresupModal(p=null){
   document.getElementById("modal-presup-title").textContent=p?"Editar presupuesto":"Nuevo presupuesto";
@@ -1750,7 +1770,7 @@ document.getElementById("btn-new-presup").addEventListener("click",()=>openPresu
 document.getElementById("close-presup").addEventListener("click",()=>closeModal("modal-presup"));
 document.getElementById("cancel-presup").addEventListener("click",()=>closeModal("modal-presup"));
 document.getElementById("modal-presup").addEventListener("click",e=>{if(e.target.id==="modal-presup")closeModal("modal-presup");});
-document.getElementById("total-adj").addEventListener("change",recalcPresup);
+document.getElementById("total-adj").addEventListener("change",()=>recalcPresup());
 
 function renderPresupItems(){
   const container=document.getElementById("presup-items-list");
@@ -1906,7 +1926,7 @@ function renderCatalogo(){
   el.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openProductModal(products[b.dataset.edit])));
   el.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>deleteProduct(b.dataset.del)));
 }
-document.getElementById("search-prod").addEventListener("input",renderCatalogo);
+document.getElementById("search-prod").addEventListener("input",()=>renderCatalogo());
 
 async function deleteProduct(id){
   if(!confirm("¿Eliminar este producto?"))return;
@@ -2202,6 +2222,9 @@ service cloud.firestore {
     function puedoBorrar() {
       return miRol() == 'owner';
     }
+    function tieneEquipoHabilitado() {
+      return ('features' in miUsuario()) && miUsuario().features.limiteEmpleados > 1;
+    }
 
     match /usuarios/{userId} {
       // Cualquiera autenticado puede leer/crear su propio doc de usuario (necesario para el flujo de registro/login)
@@ -2224,7 +2247,7 @@ service cloud.firestore {
     match /invitaciones/{id} {
       // Lectura pública (necesaria para que alguien sin cuenta todavía pueda ver la invitación antes de registrarse)
       allow read: if true;
-      allow create: if request.auth != null && estoyAprobado() && miRol() == 'owner';
+      allow create: if request.auth != null && estoyAprobado() && miRol() == 'owner' && tieneEquipoHabilitado();
       allow update: if request.auth != null; // marcar como usada desde el registro
     }
 
