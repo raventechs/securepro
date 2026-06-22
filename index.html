@@ -2225,23 +2225,30 @@ service cloud.firestore {
     function tieneEquipoHabilitado() {
       return ('features' in miUsuario()) && miUsuario().features.limiteEmpleados > 1;
     }
+    function esAdmin() {
+      return request.auth.token.email == 'rgaraventa@gmail.com';
+    }
 
     match /usuarios/{userId} {
       // Cualquiera autenticado puede leer/crear su propio doc de usuario (necesario para el flujo de registro/login)
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == userId;
       allow update: if request.auth != null && (
+        esAdmin() ||
         request.auth.uid == userId ||
         (estoyAprobado() && miRol() == 'owner' && resource.data.negocioId == miNegocio())
       );
-      allow delete: if request.auth != null && estoyAprobado() && miRol() == 'owner' && resource.data.negocioId == miNegocio();
+      allow delete: if request.auth != null && (
+        esAdmin() ||
+        (estoyAprobado() && miRol() == 'owner' && resource.data.negocioId == miNegocio())
+      );
     }
 
     match /negocios/{id} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      // El panel admin (protegido por PIN en la app) necesita poder activar cualquier negocio
-      allow update: if request.auth != null;
+      // Antes esto estaba abierto a cualquier usuario autenticado — se restringe al dueño del negocio o al admin
+      allow update: if request.auth != null && (esAdmin() || resource.data.ownerUid == request.auth.uid);
     }
 
     match /invitaciones/{id} {
@@ -2252,10 +2259,10 @@ service cloud.firestore {
     }
 
     match /clientes/{id} {
-      allow read: if request.auth != null && estoyAprobado() && resource.data.negocioId == miNegocio();
+      allow read: if request.auth != null && (esAdmin() || (estoyAprobado() && resource.data.negocioId == miNegocio()));
       allow create: if request.auth != null && estoyAprobado() && puedoEditar() && request.resource.data.negocioId == miNegocio();
-      allow update: if request.auth != null && estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio();
-      allow delete: if request.auth != null && estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio();
+      allow update: if request.auth != null && (esAdmin() || (estoyAprobado() && puedoEditar() && resource.data.negocioId == miNegocio()));
+      allow delete: if request.auth != null && (esAdmin() || (estoyAprobado() && puedoBorrar() && resource.data.negocioId == miNegocio()));
     }
 
     match /presupuestos/{id} {
