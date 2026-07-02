@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- SecurePro v2.1 — 2026-07-02 — P1+P2+P3+P5 ROBUSTEZ -->
 <title>SecurePro</title>
 <meta name="description" content="Sistema de gestión profesional para empresas de seguridad.">
 <meta name="theme-color" content="#1d4ed8">
@@ -898,11 +899,25 @@ const FB={
   appId:"1:3470750973:web:f3d029ed18093ecaf1ba94"
 };
 // 🔐 PIN ADMIN — cambiarlo por el número que quieras
-const ADMIN_PIN="1990";
+const ADMIN_PIN="2580";
 
 const fbApp=initializeApp(FB);
 const auth=getAuth(fbApp);
 const db=getFirestore(fbApp);
+
+// LOG DE ERRORES — P5 ROBUSTEZ
+async function logError(origen, mensaje, extra) {
+  try {
+    const uid = auth.currentUser ? auth.currentUser.uid : 'anonimo';
+    await addDoc(collection(db,'errores'), {
+      app: 'SecurePro', origen,
+      mensaje: String(mensaje),
+      extra: extra ? String(extra) : null,
+      uid,
+      ts: serverTimestamp()
+    });
+  } catch(_) {}
+}
 
 // Garantizar persistencia local ANTES de registrar cualquier listener de auth.
 // Si esto falla (ej: navegador bloqueando IndexedDB por configuración de privacidad),
@@ -1426,6 +1441,7 @@ async function loadData(){
   }
 
   const tasks=[
+    <button onclick="exportarCSV()" style="background:#f59e0b;color:#000;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;width:100%">⬇️ Exportar clientes CSV</button>
     safeLoad("clientes",
       query(collection(db,"clientes"),where("negocioId","==",negId),orderBy("createdAt","desc")),
       query(collection(db,"clientes"),where("negocioId","==",negId))),
@@ -2194,6 +2210,34 @@ document.getElementById("btn-gen-invite").addEventListener("click",async()=>{
     wrap.querySelector("#btn-gen-invite-new")?.addEventListener("click",()=>renderEquipo());
   }catch(e){toast("Error al generar el link","err");btn.disabled=false;btn.textContent="Generar link de invitación";}
 });
+
+// EXPORTAR CSV — P2 ROBUSTEZ
+async function exportarCSV() {
+  try {
+    const negId = currentNegocioId;
+    if (!negId) { toast('Seleccioná un negocio primero'); return; }
+    const snap = await getDocs(query(collection(db,'clientes'), where('negocioId','==',negId), orderBy('createdAt','desc')));
+    const rows = [['Nombre','Telefono','Email','Direccion','Estado','Notas','Fecha']];
+    snap.forEach(d => {
+      const v = d.data();
+      const fecha = v.createdAt ? new Date(v.createdAt.seconds*1000).toLocaleDateString('es-AR') : '';
+      rows.push([
+        (v.nombre||'').replace(/"/g,"'"),
+        v.telefono||'',
+        v.email||'',
+        (v.direccion||'').replace(/"/g,"'"),
+        v.estado||'',
+        (v.notas||'').replace(/"/g,"'"),
+        fecha
+      ]);
+    });
+    const csv = rows.map(r => r.map(x => `"${x}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'securepro-clientes-' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+  } catch(e) { logError('exportCSV', e); }
+}
 </script>
 
 <!--
@@ -2309,5 +2353,13 @@ Ahora el filtrado es por negocioId, y además controlan en el SERVIDOR (no solo
 en la interfaz) que un viewer no pueda escribir nada y que un editor no pueda
 borrar — así nadie puede saltarse los permisos abriendo la consola del navegador.
 -->
+
+<script>
+  // SERVICE WORKER — P3 ROBUSTEZ
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/securepro/sw-securepro.js')
+      .catch(e => console.warn('SW:', e));
+  }
+</script>
 </body>
 </html>
