@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SecurePro">
+<link rel="manifest" href="/securepro/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 /* ══ TOKENS LIGHT ══════════════════════════════════════════ */
@@ -2219,7 +2220,7 @@ document.getElementById("btn-gen-invite").addEventListener("click",async()=>{
 // EXPORTAR CSV — P2 ROBUSTEZ
 async function exportarCSV() {
   try {
-    const negId = currentNegocioId;
+    const negId = negocioId; // variable global del módulo
     if (!negId) { toast('Seleccioná un negocio primero'); return; }
     const snap = await getDocs(query(collection(db,'clientes'), where('negocioId','==',negId), orderBy('createdAt','desc')));
     const rows = [['Nombre','Telefono','Email','Direccion','Estado','Notas','Fecha']];
@@ -2243,6 +2244,8 @@ async function exportarCSV() {
     a.click();
   } catch(e) { logError('exportCSV', e); }
 }
+// Exponer al scope global para onclick en HTML (módulo ES tiene scope cerrado)
+window.exportarCSV = exportarCSV;
 </script>
 
 <!--
