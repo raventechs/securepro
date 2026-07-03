@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!-- SecurePro v2.1 — 2026-07-02 — P1+P2+P3+P5 ROBUSTEZ -->
+<!-- SecurePro v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
 <title>SecurePro</title>
 <meta name="description" content="Sistema de gestión profesional para empresas de seguridad.">
 <meta name="theme-color" content="#1d4ed8">
@@ -924,7 +924,12 @@ async function logError(origen, mensaje, extra) {
 // se loguea para diagnóstico pero la app sigue funcionando igual.
 let authReady=setPersistence(auth,browserLocalPersistence)
   .then(()=>console.log("✅ Persistencia local de sesión activada correctamente"))
-  .catch(err=>console.error("⚠️ No se pudo activar la persistencia local — la sesión puede no mantenerse entre cierres del navegador:",err));
+  .catch(err=>{
+    console.error("⚠️ No se pudo activar la persistencia local — la sesión puede no mantenerse entre cierres del navegador:",err);
+    logError("setPersistence","Falló la persistencia local",String(err));
+    // Resolvemos igual para que onAuthStateChanged siempre se registre
+    return Promise.resolve();
+  });
 
 // ── ESTADO ────────────────────────────────────────────────
 let me=null,userDoc=null;
