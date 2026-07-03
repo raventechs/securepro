@@ -1,4 +1,4 @@
-// sw-securepro.js — Service Worker SecurePro v2.1
+// sw-securepro.js — Service Worker SecurePro v2.1 — 2026-07-03
 // P3 ROBUSTEZ: shell offline para consulta de clientes sin WiFi
 
 const CACHE_NAME = 'securepro-v2.1';
@@ -39,7 +39,8 @@ self.addEventListener('fetch', e => {
             (url.origin === self.location.origin ||
              url.hostname.includes('googleapis.com') ||
              url.hostname.includes('gstatic.com'))) {
-          caches.open(CACHE_NAME).then(c => c.put(e.request, response.clone()));
+          const toCache = response.clone(); // clonar ANTES de consumir
+          caches.open(CACHE_NAME).then(c => c.put(e.request, toCache));
         }
         return response;
       }).catch(() => {
