@@ -14,7 +14,6 @@
 <link rel="manifest" href="/securepro/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-/* ══ TOKENS LIGHT ══════════════════════════════════════════ */
 :root{
   --navy:#0f1e3d;--navy3:#1e2f55;
   --blue:#1d4ed8;--blue-dark:#1338a0;
@@ -43,13 +42,11 @@ input,select,button,textarea{font-family:var(--font)}
 @keyframes shieldPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}
 @keyframes camPan{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
 
-/* ══ SCREENS ══════════════════════════════════════════════ */
 .screen{display:none;min-height:100vh;flex-direction:column}
 .screen.active{display:flex}
 #screen-login.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#1a3060 100%);padding:24px}
 #screen-admin.active{flex-direction:column;background:var(--bg)}
 
-/* ══ AUTH ══════════════════════════════════════════════════ */
 .auth-card{background:var(--surface);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:fadeUp .4s ease both}
 .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:32px}
 .brand-icon{width:44px;height:44px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;user-select:none;flex-shrink:0}
@@ -71,7 +68,6 @@ input,select,button,textarea{font-family:var(--font)}
 .auth-err{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-bottom:14px;display:none}
 .auth-err.show{display:block}
 
-/* ══ APP HEADER ════════════════════════════════════════════ */
 .app-header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;transition:background .2s}
 [data-theme="dark"] .app-header{background:#080f1e}
 .app-header-brand{font-size:20px;font-weight:800;color:#fff;cursor:pointer;user-select:none;letter-spacing:-.3px}
@@ -81,31 +77,26 @@ input,select,button,textarea{font-family:var(--font)}
 .icon-btn:hover{background:rgba(255,255,255,.25)}
 .user-badge{font-size:11px;color:rgba(255,255,255,.6);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ══ NAV ════════════════════════════════════════════════════ */
 .app-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:58px;z-index:99;transition:background .2s}
 .app-nav::-webkit-scrollbar{display:none}
 .nav-btn{flex-shrink:0;padding:12px 16px;border:none;background:none;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
 .nav-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
 
-/* ══ MAIN ═══════════════════════════════════════════════════ */
 .app-main{flex:1;overflow-y:auto;padding-bottom:80px}
 .section{padding:20px;display:none;animation:fadeUp .3s ease both}
 .section.active{display:block}
 
-/* ══ STATS ══════════════════════════════════════════════════ */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;box-shadow:var(--shadow)}
 .stat-num{font-size:28px;font-weight:800;color:var(--navy);line-height:1;margin-bottom:4px}
 [data-theme="dark"] .stat-num{color:var(--gold)}
 .stat-label{font-size:12px;color:var(--muted);font-weight:500}
 
-/* ══ CARDS ══════════════════════════════════════════════════ */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px}
 .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .sec-title{font-size:17px;font-weight:800;color:var(--text)}
 
-/* ══ BOTONES ════════════════════════════════════════════════ */
 .btn-sm{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-sm:hover{background:var(--surface2);border-color:var(--blue)}
 .btn-sm.primary{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 3px 0 var(--navy3)}
@@ -113,13 +104,11 @@ input,select,button,textarea{font-family:var(--font)}
 .btn-sm.danger{background:var(--red-bg);color:var(--red);border-color:#fca5a5}
 .btn-sm.success{background:var(--green-bg);color:var(--green);border-color:#86efac}
 
-/* ══ SEARCH ═════════════════════════════════════════════════ */
 .search-wrap{position:relative;margin-bottom:16px}
 .search-wrap input{width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--text);background:var(--surface);outline:none}
 .search-wrap input:focus{border-color:var(--blue)}
 .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
 
-/* ══ CLIENTES ═══════════════════════════════════════════════ */
 .client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:box-shadow .2s,transform .15s}
 .client-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .client-av{width:42px;height:42px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0}
@@ -134,7 +123,6 @@ input,select,button,textarea{font-family:var(--font)}
 .tag.acceso{background:var(--green-bg);color:var(--green);border-color:#86efac}
 .client-actions{display:flex;gap:6px;flex-shrink:0}
 
-/* ══ PRESUPUESTOS ═══════════════════════════════════════════ */
 .presup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .2s}
 .presup-card:hover{box-shadow:var(--shadow-md)}
 .presup-icon{width:42px;height:42px;border-radius:var(--radius-sm);background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -145,7 +133,6 @@ input,select,button,textarea{font-family:var(--font)}
 [data-theme="dark"] .presup-total{color:var(--gold)}
 .presup-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--green-bg);color:var(--green);margin-top:4px;display:inline-block}
 
-/* ══ CATÁLOGO ═══════════════════════════════════════════════ */
 .prod-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .prod-name{font-size:14px;font-weight:700;color:var(--text)}
 .prod-desc{font-size:12px;color:var(--muted);margin-top:2px}
@@ -154,7 +141,6 @@ input,select,button,textarea{font-family:var(--font)}
 .prod-actions{display:flex;gap:6px;flex-shrink:0}
 .type-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
 
-/* ══ CALENDARIO ═════════════════════════════════════════════ */
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cal-month-title{font-size:16px;font-weight:700;color:var(--text)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
@@ -175,7 +161,6 @@ input,select,button,textarea{font-family:var(--font)}
 .event-title{font-size:14px;font-weight:700;color:var(--text)}
 .event-client{font-size:12px;color:var(--muted);margin-top:2px}
 
-/* ══ PRESUP ITEMS ═══════════════════════════════════════════ */
 .presup-item-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
 .presup-item-row:last-child{border-bottom:none}
 .presup-item-name{font-size:14px;font-weight:700;color:var(--text)}
@@ -203,7 +188,6 @@ input,select,button,textarea{font-family:var(--font)}
 .prod-option-price{font-size:13px;font-weight:700;color:var(--blue);margin-top:3px}
 .total-adj-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 
-/* ══ MODAL ══════════════════════════════════════════════════ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:500}
 .modal-overlay.open{display:flex}
 @media(min-width:600px){.modal-overlay{align-items:center}}
@@ -221,7 +205,7 @@ input,select,button,textarea{font-family:var(--font)}
 [data-theme="dark"] .check-row.checked{background:#1e3a5f}
 .check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);cursor:pointer}
 .check-row label{font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
-/* Empresa */
+
 .header-empresa{display:flex;align-items:center;gap:8px;}
 .header-empresa-logo{width:32px;height:32px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0;}
 .header-empresa-nombre{font-size:14px;font-weight:700;color:rgba(255,255,255,.9);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -234,7 +218,7 @@ input,select,button,textarea{font-family:var(--font)}
 .presup-empresa-datos{flex:1;}
 .presup-empresa-nombre{font-size:16px;font-weight:800;color:var(--text);}
 .presup-empresa-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
-/* Seguimiento */
+
 .seguimiento-header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 10px;}
 .seguimiento-title{font-size:14px;font-weight:700;color:var(--text);}
 .btn-add-seg{background:var(--blue);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -252,11 +236,11 @@ input,select,button,textarea{font-family:var(--font)}
 .seg-btn{background:none;border:1.5px solid var(--border);border-radius:6px;padding:3px 7px;font-size:11px;cursor:pointer;color:var(--muted);}
 .seg-btn:hover{border-color:var(--blue);color:var(--blue);}
 .seg-btn.ok{border-color:var(--green);color:var(--green);}
-/* Ficha */
+
 .ficha-tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px;}
 .ficha-dato{font-size:13px;color:var(--muted);margin-bottom:5px;}
 .ficha-dato strong{color:var(--text);}
-/* Dash seguimiento */
+
 .dash-seg-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
 .dash-seg-item:last-child{border-bottom:none;}
 .dash-seg-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
@@ -276,16 +260,13 @@ input,select,button,textarea{font-family:var(--font)}
 .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
 .dynamic-fields{background:var(--bg);border-radius:10px;padding:12px;margin-top:4px;border:1px solid var(--border)}
 
-/* ══ VIEW PRESUP ════════════════════════════════════════════ */
 .view-presup-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
 .view-presup-item:last-child{border-bottom:none}
 
-/* ══ PDF OVERLAY ════════════════════════════════════════════ */
 #pdf-overlay{display:none;position:fixed;inset:0;background:#fff;z-index:9000;overflow-y:auto;padding:20px}
 [data-theme="dark"] #pdf-overlay{background:#1e293b}
 .pdf-actions{display:flex;gap:10px;margin-bottom:20px;justify-content:flex-end}
 
-/* ══ ADMIN ══════════════════════════════════════════════════ */
 .admin-header{background:#7c3aed;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
 .admin-header-title{font-size:18px;font-weight:800;color:#fff}
 .admin-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px}
@@ -304,7 +285,6 @@ input,select,button,textarea{font-family:var(--font)}
 .btn-aunban{flex:1;padding:8px;background:var(--green-bg);border:1.5px solid #86efac;border-radius:8px;color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)}
 .ban-badge{font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:2px 6px;border-radius:6px;margin-left:6px}
 
-/* ══ PIN ════════════════════════════════════════════════════ */
 .pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:9999}
 .pin-overlay.open{display:flex}
 @media(min-width:600px){.pin-overlay{align-items:center}}
@@ -322,7 +302,6 @@ input,select,button,textarea{font-family:var(--font)}
 .pin-btn:active{background:var(--blue);color:#fff;border-color:var(--blue)}
 .pin-err{color:var(--red);font-size:13px;font-weight:600;text-align:center;margin-top:10px;display:none}
 
-/* ══ EMPTY / LOADING ════════════════════════════════════════ */
 .empty{text-align:center;padding:48px 24px;color:var(--muted)}
 .empty-icon{font-size:48px;margin-bottom:12px}
 .empty-msg{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
@@ -330,11 +309,9 @@ input,select,button,textarea{font-family:var(--font)}
 .loading-wrap{display:flex;justify-content:center;padding:40px}
 .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 
-/* ══ FAB ════════════════════════════════════════════════════ */
 .fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:var(--gold);border:none;border-radius:16px;font-size:28px;cursor:pointer;box-shadow:0 4px 0 var(--gold2),0 8px 24px rgba(240,184,74,.4);transition:transform .1s,box-shadow .1s;z-index:200;display:flex;align-items:center;justify-content:center;color:var(--navy)}
 .fab:active{transform:translateY(2px);box-shadow:0 2px 0 var(--gold2)}
 
-/* ══ TOAST ══════════════════════════════════════════════════ */
 #toast-wrap{position:fixed;bottom:24px;right:80px;display:flex;flex-direction:column;gap:8px;z-index:9998}
 .toast{background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow-md);animation:fadeUp .3s ease both}
 [data-theme="dark"] .toast{background:#1e293b;border:1px solid var(--border)}
@@ -346,7 +323,7 @@ input,select,button,textarea{font-family:var(--font)}
   .field-row{grid-template-columns:1fr}
   .client-actions{flex-direction:column}
 }
-/* ══ DEMO VENCIDA ══════════════════════════════════════════ */
+
 #demo-wall{position:fixed;inset:0;background:linear-gradient(145deg,var(--navy),#1a3060);display:none;align-items:center;justify-content:center;z-index:9990;padding:24px}
 #demo-wall.open{display:flex}
 .demo-card{background:var(--surface);border-radius:20px;padding:36px 28px;width:100%;max-width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.4);animation:fadeUp .4s ease both}
@@ -364,7 +341,7 @@ input,select,button,textarea{font-family:var(--font)}
 .demo-badge.activa{background:var(--warn-bg);color:var(--warn)}
 .demo-badge.vencida{background:var(--red-bg);color:var(--red)}
 .demo-badge.completa{background:var(--green-bg);color:var(--green)}
-/* INVITACIÓN */
+
 .invite-card{max-width:380px}
 .invite-card-icon{font-size:44px;margin-bottom:10px}
 .invite-card-negocio{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px}
@@ -372,7 +349,7 @@ input,select,button,textarea{font-family:var(--font)}
 .invite-card-sub{font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.5}
 .invite-card-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green);border:1px solid #86efac;border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:18px}
 .invite-expired{background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--radius);padding:14px;color:var(--red);font-size:14px;font-weight:600;margin-bottom:16px}
-/* EQUIPO */
+
 .invite-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
 .invite-section-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
 .invite-row{display:flex;gap:8px;margin-bottom:8px}
@@ -389,7 +366,7 @@ input,select,button,textarea{font-family:var(--font)}
 .equipo-badge.pendiente{background:var(--warn-bg);color:var(--warn)}
 .equipo-badge.activo{background:var(--green-bg);color:var(--green)}
 .equipo-actions{display:flex;gap:6px;flex-shrink:0}
-/* PERMISOS POR ROL */
+
 body.role-readonly .main-fab,
 body.role-readonly #btn-new-client,
 body.role-readonly #btn-new-presup,
@@ -405,6 +382,7 @@ body.role-viewer .btn-edit-client{display:none!important}
 </style>
 </head>
 <body>
+<div id="offlineBanner" style="display:none;background:#7c3200;color:#ffd9b3;font-size:0.8rem;font-weight:600;text-align:center;padding:6px 12px;">Sin conexion - registros guardados localmente</div>
 
 <!-- LOGIN -->
 <!-- LOADING -->
@@ -573,6 +551,16 @@ body.role-viewer .btn-edit-client{display:none!important}
     <div class="section" id="section-configuracion">
       <div class="sec-header"><div class="sec-title">Mi Empresa</div></div>
       <div class="card">
+        <div class="card-title">Backup de datos</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Se genera automaticamente una vez por dia. Incluye clientes, presupuestos, eventos, productos y configuracion.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="btn-save" style="padding:8px 14px;font-size:13px;" onclick="generarBackup(false)">Descargar backup</button>
+          <button class="btn-sm" style="padding:8px 14px;font-size:13px;" onclick="document.getElementById('inputRestaurar').click()">Restaurar backup</button>
+        </div>
+        <input type="file" id="inputRestaurar" accept=".json" style="display:none;" onchange="restaurarBackup(this)">
+        <p style="font-size:11px;color:var(--muted);">Ultimo backup: <span id="ultimoBackupFecha">-</span></p>
+      </div>
+      <div class="card">
         <div class="config-logo-wrap">
           <div class="config-logo-preview" id="logo-preview">🏢</div>
           <div>
@@ -597,6 +585,7 @@ body.role-viewer .btn-edit-client{display:none!important}
       </div>
     </div>
   </div>
+  <div id="offlineBadgeBox" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2a1800;border:1px solid #e67e22;border-radius:8px;padding:8px 16px;font-size:0.8rem;z-index:100;">Registros pendientes: <strong id="offlineBadgeCount">0</strong></div>
   <button class="fab" id="main-fab">＋</button>
 </div>
 
@@ -890,8 +879,6 @@ body.role-viewer .btn-edit-client{display:none!important}
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,GoogleAuthProvider,signInWithPopup,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,doc,addDoc,getDocs,getDoc,updateDoc,deleteDoc,setDoc,query,where,orderBy,onSnapshot,serverTimestamp,Timestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// 🔧 FIREBASE CONFIG — reemplazar con datos reales del proyecto SecurePro
 const FB={
   apiKey:"AIzaSyDgpyUd8AExCLy29fwkjc5-mEALA57Wtig",
   authDomain:"pro-a247e.firebaseapp.com",
@@ -900,14 +887,11 @@ const FB={
   messagingSenderId:"3470750973",
   appId:"1:3470750973:web:f3d029ed18093ecaf1ba94"
 };
-// 🔐 PIN ADMIN — cambiarlo por el número que quieras
 const ADMIN_PIN="2580";
 
 const fbApp=initializeApp(FB);
 const auth=getAuth(fbApp);
 const db=getFirestore(fbApp);
-
-// LOG DE ERRORES — P5 ROBUSTEZ
 async function logError(origen, mensaje, extra) {
   try {
     const uid = auth.currentUser ? auth.currentUser.uid : 'anonimo';
@@ -920,20 +904,13 @@ async function logError(origen, mensaje, extra) {
     });
   } catch(_) {}
 }
-
-// Garantizar persistencia local ANTES de registrar cualquier listener de auth.
-// Si esto falla (ej: navegador bloqueando IndexedDB por configuración de privacidad),
-// se loguea para diagnóstico pero la app sigue funcionando igual.
 let authReady=setPersistence(auth,browserLocalPersistence)
   .then(()=>console.log("✅ Persistencia local de sesión activada correctamente"))
   .catch(err=>{
     console.error("⚠️ No se pudo activar la persistencia local — la sesión puede no mantenerse entre cierres del navegador:",err);
     logError("setPersistence","Falló la persistencia local",String(err));
-    // Resolvemos igual para que onAuthStateChanged siempre se registre
     return Promise.resolve();
   });
-
-// ── ESTADO ────────────────────────────────────────────────
 let me=null,userDoc=null;
 let negocioId=null,myRole="owner",negocioStatus="demo"; // owner | editor | viewer
 let unsubEquipo=null;
@@ -956,8 +933,6 @@ const PROD_TYPES={camara:"📷 Cámara",alarma:"🔔 Alarma/Sensor",dvr:"🖥 DV
 const SEG_TIPOS={visita_preventiva:"🔧 Visita preventiva",visita_correctiva:"🛠 Visita correctiva",oferta_producto:"💰 Oferta de producto",llamado:"📞 Llamado de seguimiento",garantia:"📋 Vencimiento de garantía",otro:"✏️ Otro"};
 function segEstado(fecha){const hoy=new Date();hoy.setHours(0,0,0,0);const f=new Date(fecha+"T00:00:00");if(f<hoy)return"vencido";if(f.toDateString()===hoy.toDateString())return"hoy";return"pendiente";}
 function segTipoLabel(s){if(s.tipo==="otro")return"✏️ "+sanitizeHTML(s.tipoCustom||"Otro");return sanitizeHTML(SEG_TIPOS[s.tipo]||s.tipo);}
-
-// ── TEMA ──────────────────────────────────────────────────
 function initTheme(){applyTheme(localStorage.getItem("sp-theme")||"light");}
 function applyTheme(t){
   document.documentElement.setAttribute("data-theme",t);
@@ -967,8 +942,6 @@ function applyTheme(t){
 }
 function toggleTheme(){applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");}
 initTheme();
-
-// ── HELPERS ───────────────────────────────────────────────
 function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
 function toast(msg,type=""){
   const el=document.createElement("div");el.className="toast"+(type?" "+type:"");
@@ -983,8 +956,6 @@ function fmtDate(str){if(!str)return"—";const[y,m,d]=str.split("-");return`${d
 function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
 function openModal(id){document.getElementById(id).classList.add("open");}
 function closeModal(id){document.getElementById(id).classList.remove("open");}
-
-// ── EMPRESA ───────────────────────────────────────────────
 function updateHeaderEmpresa(){
   const wrap=document.getElementById("header-empresa-wrap");const brand=document.getElementById("app-logo");
   if(empresa.nombre){brand.style.display="none";wrap.style.display="flex";wrap.innerHTML=`<div class="header-empresa">${empresa.logoBase64?`<img src="${empresa.logoBase64}" class="header-empresa-logo" alt="logo"/>`:""}<span class="header-empresa-nombre">${sanitizeHTML(empresa.nombre)}</span></div>`;}
@@ -1017,8 +988,6 @@ function getEmpresaHeaderVistaPrevia(){
 document.getElementById("logo-file-input").addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;if(file.size>500000){toast("El logo no debe superar 500KB","err");return;}const reader=new FileReader();reader.onload=ev=>{empresa.logoBase64=ev.target.result;document.getElementById("logo-preview").innerHTML=`<img src="${empresa.logoBase64}" alt="logo"/>`;document.getElementById("btn-remove-logo").style.display="inline-flex";updatePreviewEmpresa();};reader.readAsDataURL(file);});
 document.getElementById("btn-remove-logo").addEventListener("click",()=>{empresa.logoBase64=null;document.getElementById("logo-preview").innerHTML="🏢";document.getElementById("btn-remove-logo").style.display="none";document.getElementById("logo-file-input").value="";updatePreviewEmpresa();});
 document.getElementById("save-empresa").addEventListener("click",()=>{const nombre=document.getElementById("emp-nombre").value.trim();if(!nombre){toast("El nombre de la empresa es obligatorio","err");return;}empresa={...empresa,nombre,direccion:document.getElementById("emp-direccion").value.trim(),telefono:document.getElementById("emp-telefono").value.trim(),email:document.getElementById("emp-email").value.trim()};localStorage.setItem("sp-empresa",JSON.stringify(empresa));toast("Datos guardados","ok");updateHeaderEmpresa();updatePreviewEmpresa();});
-
-// ── LOGO TAPS ─────────────────────────────────────────────
 ["login-logo","app-logo"].forEach(id=>{
   document.getElementById(id)?.addEventListener("click",()=>{
     logoTaps++;clearTimeout(logoTimer);
@@ -1026,8 +995,6 @@ document.getElementById("save-empresa").addEventListener("click",()=>{const nomb
     logoTimer=setTimeout(()=>logoTaps=0,2000);
   });
 });
-
-// ── PIN ───────────────────────────────────────────────────
 function openPin(){pinBuf="";updDots();document.getElementById("pin-err").style.display="none";document.getElementById("pin-overlay").classList.add("open");}
 function closePin(){document.getElementById("pin-overlay").classList.remove("open");}
 function updDots(){for(let i=0;i<4;i++)document.getElementById("d"+i).classList.toggle("filled",i<pinBuf.length);}
@@ -1046,8 +1013,6 @@ function checkPin(){
 }
 document.getElementById("btn-pin-close").addEventListener("click",()=>closePin());
 document.getElementById("pin-overlay").addEventListener("click",e=>{if(e.target.id==="pin-overlay")closePin();});
-
-// ── ADMIN ─────────────────────────────────────────────────
 async function loadAdminUsers(){
   const c=document.getElementById("admin-users-list");
   c.innerHTML='<div class="loading-wrap"><div class="spinner"></div></div>';
@@ -1118,7 +1083,6 @@ document.getElementById("admin-users-list").addEventListener("click",async e=>{
   }
   if(act&&confirm("¿Activar cuenta completa?")){
     await updateDoc(doc(db,"usuarios",act.dataset.uid),{status:"activo",demoExpiry:null});
-    // Si el usuario activado es owner de un negocio, propagar el activo a todo su equipo
     try{
       const uSnap=await getDoc(doc(db,"usuarios",act.dataset.uid));
       const uData=uSnap.data();
@@ -1155,8 +1119,6 @@ document.getElementById("atab-clients").addEventListener("click",()=>{
   loadAdminClients();
 });
 document.getElementById("btn-admin-exit").addEventListener("click",()=>{if(me)showScreen("screen-app");else showScreen("screen-login");});
-
-// ── DEMO HELPERS ──────────────────────────────────────────
 const DEMO_MS=24*60*60*1000;
 
 function getDemoRestante(data){
@@ -1182,11 +1144,8 @@ function checkDemo(){
 }
 
 document.getElementById('btn-demo-logout').addEventListener('click',()=>signOut(auth));
-
-// ── AUTH STATE ────────────────────────────────────────────
 authReady.then(()=>{
 onAuthStateChanged(auth,async user=>{
-  // Si hay un invite en proceso, este listener no toca nada
   if(_inviteCode)return;
 
   if(user){
@@ -1236,7 +1195,7 @@ onAuthStateChanged(auth,async user=>{
     document.body.classList.toggle("role-viewer",myRole==="viewer");
     document.body.classList.toggle("role-readonly",!canEdit());
     showScreen("screen-app");updateHeaderEmpresa();
-    await loadData();showSection("dashboard");checkDemo();
+    await loadData();showSection("dashboard");checkDemo();initOffline();chequearBackupDiario();
   } else {
     me=null;userDoc=null;negocioId=null;myRole="owner";
     clients={};presupuestos={};products={};events={};seguimiento={};equipo=[];
@@ -1247,14 +1206,10 @@ onAuthStateChanged(auth,async user=>{
   }
 });
 }); // cierre de authReady.then()
-
-// ── INVITACIÓN ────────────────────────────────────────────
-// Función central que hace el join completo — se llama SOLO desde los botones, nunca desde onAuthStateChanged
 async function ejecutarJoin(userFirebase){
   if(!activeInvite)return;
   const inv=activeInvite; // copiar referencia antes de cualquier await
   try{
-    // 1. Escribir el documento del usuario completo con el negocioId del invite
     await setDoc(doc(db,"usuarios",userFirebase.uid),{
       uid:userFirebase.uid,
       email:userFirebase.email,
@@ -1266,12 +1221,9 @@ async function ejecutarJoin(userFirebase){
       demoStart:serverTimestamp(),
       createdAt:serverTimestamp()
     });
-    // 2. Marcar la invitación como usada
     await updateDoc(doc(db,"invitaciones",inv.code),{usado:true,usadoPor:userFirebase.email,usadoAt:serverTimestamp()});
-    // 3. Limpiar URL y activeInvite
     window.history.replaceState({},"",window.location.pathname);
     activeInvite=null;
-    // 4. Ir a pantalla de pendiente
     showScreen("screen-pending");
   }catch(e){
     console.error("Error en ejecutarJoin:",e);
@@ -1303,8 +1255,6 @@ if(_inviteCode){
       document.getElementById("invite-neg-nombre").textContent=neg.nombre||"Equipo de seguridad";
       document.getElementById("invite-neg-sub").textContent=`Fuiste invitado a unirte como ${rolLabel}`;
       activeInvite={code:_inviteCode,negocioId:inv.negocioId,ownerUid:inv.ownerUid,rol:inv.rol||"editor"};
-
-      // Verificar si ya hay sesión activa de Firebase
       const currentUser=auth.currentUser;
       if(currentUser){
         document.getElementById("invite-valid-wrap").style.display="none";
@@ -1325,16 +1275,12 @@ if(_inviteCode){
 document.getElementById("btn-inv-cancel").addEventListener("click",()=>{
   activeInvite=null;window.history.replaceState({},"",window.location.pathname);showScreen("screen-login");
 });
-
-// Ya logueado → join directo
 document.getElementById("btn-inv-join").addEventListener("click",async()=>{
   const u=auth.currentUser;if(!u||!activeInvite)return;
   const btn=document.getElementById("btn-inv-join");btn.disabled=true;btn.textContent="Uniéndome...";
   await ejecutarJoin(u);
   btn.disabled=false;btn.textContent="Unirme al equipo →";
 });
-
-// Google desde invite
 document.getElementById("btn-inv-google").addEventListener("click",async()=>{
   if(!activeInvite)return;
   const btn=document.getElementById("btn-inv-google");
@@ -1349,8 +1295,6 @@ document.getElementById("btn-inv-google").addEventListener("click",async()=>{
   btn.disabled=false;
   btn.innerHTML=`<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.48A4.8 4.8 0 0 1 4.5 7.5V5.43H1.83a8 8 0 0 0 0 7.14l2.67-2.09z"/><path fill="#EA4335" d="M8.98 3.58c1.32 0 2.5.45 3.44 1.35l2.54-2.54A8 8 0 0 0 1.83 5.43L4.5 7.5c.66-1.97 2.49-3.92 4.48-3.92z"/></svg> Continuar con Google`;
 });
-
-// Toggle login/registro
 document.getElementById("inv-toggle-login").addEventListener("click",()=>{
   const loginWrap=document.getElementById("inv-login-wrap");
   const registerBtn=document.getElementById("btn-inv-register");
@@ -1360,8 +1304,6 @@ document.getElementById("inv-toggle-login").addEventListener("click",()=>{
   registerBtn.style.display=showing?"block":"none";
   toggleBtn.textContent=showing?"Iniciá sesión":"Volver a registrarme";
 });
-
-// Login con email desde invite
 document.getElementById("btn-inv-login").addEventListener("click",async()=>{
   if(!activeInvite)return;
   const email=document.getElementById("inv-email").value.trim();
@@ -1378,8 +1320,6 @@ document.getElementById("btn-inv-login").addEventListener("click",async()=>{
     btn.disabled=false;btn.textContent="Ingresar y unirme →";
   }
 });
-
-// Registro con email desde invite
 document.getElementById("btn-inv-register").addEventListener("click",async()=>{
   if(!activeInvite)return;
   const email=document.getElementById("inv-email").value.trim();
@@ -1398,8 +1338,6 @@ document.getElementById("btn-inv-register").addEventListener("click",async()=>{
 });
 
 document.getElementById("btn-pending-logout").addEventListener("click",()=>signOut(auth));
-
-// ── AUTH ACTIONS ──────────────────────────────────────────
 document.getElementById("toggle-mode").addEventListener("click",()=>{
   isRegister=!isRegister;
   document.getElementById("btn-auth").textContent=isRegister?"Crear cuenta →":"Ingresar →";
@@ -1428,8 +1366,6 @@ document.getElementById("btn-auth").addEventListener("click",async()=>{
 
 document.getElementById("btn-logout").addEventListener("click",()=>signOut(auth));
 document.getElementById("btn-theme").addEventListener("click",()=>toggleTheme());
-
-// ── CARGAR DATOS ──────────────────────────────────────────
 async function loadData(){
   const negId=negocioId;
 
@@ -1476,12 +1412,9 @@ async function loadData(){
   seguimiento={};sSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!seguimiento[s.clientId])seguimiento[s.clientId]=[];seguimiento[s.clientId].push(s);});
   if(isOwner()&&results[5]){
     equipo=[];results[5].forEach(d=>equipo.push({id:d.id,...d.data()}));
-    // Activar listener en tiempo real para el equipo
     startEquipoListener(negId);
   }
 }
-
-// ── NAVEGACIÓN ────────────────────────────────────────────
 function showSection(name){
   currentSection=name;
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
@@ -1504,8 +1437,6 @@ document.getElementById("main-fab").addEventListener("click",()=>{
   else if(currentSection==="catalogo")openProductModal();
   else if(currentSection==="calendario")openEventModal();
 });
-
-// ── DASHBOARD ─────────────────────────────────────────────
 function renderDashboard(){
   const allClients=Object.values(clients);
   const allPresup=Object.values(presupuestos);
@@ -1517,15 +1448,12 @@ function renderDashboard(){
   document.getElementById("stat-cam").textContent=allClients.filter(c=>c.camaras).length;
   document.getElementById("stat-alarm").textContent=allClients.filter(c=>c.alarma).length;
   document.getElementById("stat-eventos").textContent=eventosEsteMes;
-  // Próximos eventos
   const proxEventos=allEvents.filter(e=>new Date(e.date+"T00:00:00")>=new Date(now.toDateString())).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
   const evEl=document.getElementById("dash-events");
   evEl.innerHTML=proxEventos.length===0?emptyHTML("📅","Sin eventos próximos"):proxEventos.map(e=>eventItemHTML(e)).join("");
-  // Últimos presupuestos
   const presEl=document.getElementById("dash-presup");
   presEl.innerHTML=allPresup.slice(0,3).map(p=>`<div class="presup-card" data-pid="${p.id}"><div class="presup-icon">💰</div><div class="presup-info"><div class="presup-client">${sanitizeHTML(p.client)}</div><div class="presup-date">${fmtDate(p.date)}</div></div><div class="presup-total">${fmtMoney(p.total)}</div></div>`).join("")||emptyHTML("💰","Sin presupuestos");
   presEl.querySelectorAll(".presup-card[data-pid]").forEach(el=>el.addEventListener("click",()=>viewPresup(el.dataset.pid)));
-  // Últimos clientes
   const clEl=document.getElementById("dash-clients");
   clEl.innerHTML=allClients.slice(0,3).map(c=>clientRowHTML(c,false)).join("")||emptyHTML("👤","Sin clientes");
   renderDashSeguimiento();
@@ -1541,8 +1469,6 @@ function renderDashSeguimiento(){
     return`<div class="dash-seg-item"><span class="dash-seg-badge ${badgeClass}">${badgeLabel}</span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--text)">${segTipoLabel(s)}</div><div style="font-size:12px;color:var(--muted)">${sanitizeHTML(s.clientName)}</div>${s.notas?`<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sanitizeHTML(s.notas)}</div>`:""}</div></div>`;
   }).join("");
 }
-
-// ── CLIENTES ──────────────────────────────────────────────
 function renderClients(){
   const q=(document.getElementById("search-clients")?.value||"").toLowerCase();
   const list=Object.values(clients).filter(c=>!q||(c.name+c.addr+c.phone).toLowerCase().includes(q)).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
@@ -1554,8 +1480,6 @@ function renderClients(){
     card.querySelector(".btn-del-client")?.addEventListener("click",e=>{e.stopPropagation();deleteClient(card.dataset.cid);});
   });
 }
-
-// ── FICHA CLIENTE ─────────────────────────────────────────
 function openFichaCliente(cid){
   currentFichaClientId=cid;const c=clients[cid];if(!c)return;
   document.getElementById("ficha-client-title").textContent=c.name;
@@ -1634,8 +1558,6 @@ async function deleteClient(id){
   await deleteDoc(doc(db,"clientes",id));
   delete clients[id];toast("Cliente eliminado");renderClients();renderDashboard();
 }
-
-// ── MODAL CLIENTE ─────────────────────────────────────────
 function openClientModal(c=null){
   document.getElementById("modal-client-title").textContent=c?"Editar cliente":"Nuevo cliente";
   document.getElementById("c-id").value=c?.id||"";
@@ -1644,8 +1566,6 @@ function openClientModal(c=null){
   document.getElementById("c-email").value=c?.email||"";
   document.getElementById("c-addr").value=c?.addr||"";
   document.getElementById("c-notes").value=c?.notes||"";
-
-  // Checkboxes + paneles de detalle
   const cats=[
     {key:"camaras",cb:"cb-cam",panel:"det-camaras",row:"chk-camaras"},
     {key:"alarma",cb:"cb-alarm",panel:"det-alarma",row:"chk-alarma"},
@@ -1658,10 +1578,7 @@ function openClientModal(c=null){
     document.getElementById(row).classList.toggle("checked",checked);
     document.getElementById(panel).style.display=checked?"block":"none";
   });
-
-  // Cargar detalles si existen
   const d=c?.detalle||{};
-  // Cámaras
   document.getElementById("det-cam-qty").value=d.cam?.qty||"";
   document.getElementById("det-cam-mp").value=d.cam?.mp||"";
   document.getElementById("det-cam-int").checked=d.cam?.int||false;
@@ -1669,7 +1586,6 @@ function openClientModal(c=null){
   document.getElementById("det-cam-domo").checked=d.cam?.domo||false;
   document.getElementById("det-cam-bala").checked=d.cam?.bala||false;
   document.getElementById("det-cam-notes").value=d.cam?.notes||"";
-  // Alarma
   document.getElementById("det-alarm-qty").value=d.alarm?.qty||"";
   document.getElementById("det-alarm-panel").value=d.alarm?.panel||"";
   document.getElementById("det-alarm-mov").checked=d.alarm?.mov||false;
@@ -1679,12 +1595,10 @@ function openClientModal(c=null){
   else if(d.alarm?.sirena==="no")document.getElementById("det-alarm-sir-no").checked=true;
   else{document.getElementById("det-alarm-sir-si").checked=false;document.getElementById("det-alarm-sir-no").checked=false;}
   document.getElementById("det-alarm-notes").value=d.alarm?.notes||"";
-  // Cerco
   document.getElementById("det-cerco-metros").value=d.cerco?.metros||"";
   document.getElementById("det-cerco-voltaje").value=d.cerco?.voltaje||"";
   document.getElementById("det-cerco-sectores").value=d.cerco?.sectores||"";
   document.getElementById("det-cerco-notes").value=d.cerco?.notes||"";
-  // Acceso
   document.getElementById("det-acc-qty").value=d.acc?.qty||"";
   document.getElementById("det-acc-tipo").value=d.acc?.tipo||"";
   document.getElementById("det-acc-notes").value=d.acc?.notes||"";
@@ -1695,7 +1609,6 @@ document.getElementById("btn-new-client").addEventListener("click",()=>openClien
 document.getElementById("close-client").addEventListener("click",()=>closeModal("modal-client"));
 document.getElementById("cancel-client").addEventListener("click",()=>closeModal("modal-client"));
 document.getElementById("modal-client").addEventListener("click",e=>{if(e.target.id==="modal-client")closeModal("modal-client");});
-// ── TOGGLE PANELES DE DETALLE ─────────────────────────────
 const DET_MAP={
   "chk-camaras":{cb:"cb-cam",panel:"det-camaras"},
   "chk-alarma":{cb:"cb-alarm",panel:"det-alarma"},
@@ -1765,8 +1678,6 @@ document.getElementById("save-client").addEventListener("click",async()=>{
   }catch(e){toast("Error al guardar","err");}
   btn.disabled=false;btn.textContent="Guardar cliente";
 });
-
-// ── PRESUPUESTOS ──────────────────────────────────────────
 function renderPresupuestos(){
   const q=(document.getElementById("search-presup")?.value||"").toLowerCase();
   const list=Object.values(presupuestos).filter(p=>!q||p.client.toLowerCase().includes(q));
@@ -1834,8 +1745,6 @@ function recalcPresup(){
   document.getElementById("presup-grand-total").textContent=fmtMoney(total);
   if(badge){badge.style.display=adjPct>0?"inline":"none";badge.textContent="+"+adjPct+"%";}
 }
-
-// Búsqueda de clientes en presupuesto
 document.getElementById("p-client").addEventListener("input",()=>{
   const q=document.getElementById("p-client").value.trim().toLowerCase();
   const dropdown=document.getElementById("client-dropdown");
@@ -1857,8 +1766,6 @@ document.addEventListener("click",e=>{
   if(!e.target.closest("#p-client")&&!e.target.closest("#client-dropdown"))
     document.getElementById("client-dropdown").style.display="none";
 });
-
-// Búsqueda de productos
 document.getElementById("prod-search-input").addEventListener("input",()=>{
   const q=document.getElementById("prod-search-input").value.trim().toLowerCase();
   const dropdown=document.getElementById("prod-dropdown");
@@ -1894,8 +1801,6 @@ document.getElementById("save-presup").addEventListener("click",async()=>{
   }catch(e){toast("Error al guardar","err");}
   btn.disabled=false;btn.textContent="Guardar presupuesto";
 });
-
-// Ver presupuesto
 function viewPresup(id){
   const p=presupuestos[id];if(!p)return;
   currentViewPresupId=id;
@@ -1929,8 +1834,6 @@ document.getElementById("btn-pdf-presup").addEventListener("click",()=>{
   window.scrollTo(0,0);
 });
 document.getElementById("btn-close-pdf").addEventListener("click",()=>{document.getElementById("pdf-overlay").style.display="none";});
-
-// ── CATÁLOGO ──────────────────────────────────────────────
 
 function renderCatalogo(){
   const q=(document.getElementById("search-prod")?.value||"").toLowerCase();
@@ -1999,8 +1902,6 @@ document.getElementById("save-product").addEventListener("click",async()=>{
   }catch(e){toast("Error al guardar","err");}
   btn.disabled=false;btn.textContent="Guardar producto";
 });
-
-// ── CALENDARIO ────────────────────────────────────────────
 function renderCalendar(){
   const year=calDate.getFullYear();const month=calDate.getMonth();
   document.getElementById("cal-title").textContent=MESES[month]+" "+year;
@@ -2072,8 +1973,6 @@ document.getElementById("save-event").addEventListener("click",async()=>{
   }catch(e){toast("Error al guardar","err");}
   btn.disabled=false;btn.textContent="Guardar evento";
 });
-
-// ── GOOGLE LOGIN ──────────────────────────────────────────
 document.getElementById("btn-google").addEventListener("click",async()=>{
   const btn=document.getElementById("btn-google");
   btn.disabled=true;btn.textContent="Conectando...";
@@ -2087,17 +1986,13 @@ document.getElementById("btn-google").addEventListener("click",async()=>{
   }
   btn.disabled=false;
 });
-
-// ── EQUIPO ──────────────────────────────────────────────────
 function startEquipoListener(negId){
   if(unsubEquipo)unsubEquipo();
   unsubEquipo=onSnapshot(
     query(collection(db,"usuarios"),where("negocioId","==",negId)),
     snap=>{
       equipo=[];snap.forEach(d=>equipo.push({id:d.id,...d.data()}));
-      // Si la sección equipo está activa, re-renderizar automáticamente
       if(currentSection==="equipo")renderEquipo();
-      // Actualizar badge de pendientes en el nav
       const pendN=equipo.filter(e=>e.estado==="pendiente"&&e.id!==me?.uid).length;
       const navEquipo=document.getElementById("nav-equipo");
       if(navEquipo&&pendN>0)navEquipo.textContent=`👥 Equipo (${pendN})`;
@@ -2216,8 +2111,6 @@ document.getElementById("btn-gen-invite").addEventListener("click",async()=>{
     wrap.querySelector("#btn-gen-invite-new")?.addEventListener("click",()=>renderEquipo());
   }catch(e){toast("Error al generar el link","err");btn.disabled=false;btn.textContent="Generar link de invitación";}
 });
-
-// EXPORTAR CSV — P2 ROBUSTEZ
 async function exportarCSV() {
   try {
     const negId = negocioId; // variable global del módulo
@@ -2244,7 +2137,6 @@ async function exportarCSV() {
     a.click();
   } catch(e) { logError('exportCSV', e); }
 }
-// Exponer al scope global para onclick en HTML (módulo ES tiene scope cerrado)
 window.exportarCSV = exportarCSV;
 </script>
 
@@ -2254,8 +2146,6 @@ FIRESTORE SECURITY RULES — Modelo de negocios con roles (owner/editor/viewer)
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Función helper: trae el documento de usuario del solicitante
     function miUsuario() {
       return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
     }
@@ -2282,7 +2172,6 @@ service cloud.firestore {
     }
 
     match /usuarios/{userId} {
-      // Cualquiera autenticado puede leer/crear su propio doc de usuario (necesario para el flujo de registro/login)
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == userId;
       allow update: if request.auth != null && (
@@ -2299,12 +2188,10 @@ service cloud.firestore {
     match /negocios/{id} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      // Antes esto estaba abierto a cualquier usuario autenticado — se restringe al dueño del negocio o al admin
       allow update: if request.auth != null && (esAdmin() || resource.data.ownerUid == request.auth.uid);
     }
 
     match /invitaciones/{id} {
-      // Lectura pública (necesaria para que alguien sin cuenta todavía pueda ver la invitación antes de registrarse)
       allow read: if true;
       allow create: if request.auth != null && estoyAprobado() && miRol() == 'owner' && tieneEquipoHabilitado();
       allow update: if request.auth != null; // marcar como usada desde el registro
@@ -2363,11 +2250,181 @@ borrar — así nadie puede saltarse los permisos abriendo la consola del navega
 -->
 
 <script>
-  // SERVICE WORKER — P3 ROBUSTEZ
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/securepro/sw-securepro.js')
       .catch(e => console.warn('SW:', e));
   }
+
+// OFFLINE-FIRST SecurePro
+let estaOnline = navigator.onLine;
+const IDB_SP = 'securepro-offline';
+let idbSP = null;
+
+function abrirIDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(IDB_SP, 1);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      ['clientes_pendientes','presupuestos_pendientes','eventos_pendientes'].forEach(store => {
+        if (!d.objectStoreNames.contains(store))
+          d.createObjectStore(store, { keyPath: 'localId', autoIncrement: true });
+      });
+    };
+    req.onsuccess = e => { idbSP = e.target.result; res(idbSP); };
+    req.onerror = e => rej(e);
+  });
+}
+
+function idbAdd(store, obj) {
+  return new Promise((res, rej) => {
+    const req = idbSP.transaction(store, 'readwrite').objectStore(store).add(obj);
+    req.onsuccess = () => res(req.result);
+    req.onerror = e => rej(e);
+  });
+}
+
+function idbGetAll(store) {
+  return new Promise((res, rej) => {
+    const req = idbSP.transaction(store, 'readonly').objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = e => rej(e);
+  });
+}
+
+function idbDelete(store, key) {
+  return new Promise((res, rej) => {
+    const req = idbSP.transaction(store, 'readwrite').objectStore(store).delete(key);
+    req.onsuccess = () => res();
+    req.onerror = e => rej(e);
+  });
+}
+
+function actualizarBadge() {
+  if (!idbSP) return;
+  Promise.all([
+    idbGetAll('clientes_pendientes'),
+    idbGetAll('presupuestos_pendientes'),
+    idbGetAll('eventos_pendientes')
+  ]).then(results => {
+    const total = results.reduce((s, r) => s + r.length, 0);
+    const box = document.getElementById('offlineBadgeBox');
+    const cnt = document.getElementById('offlineBadgeCount');
+    if (box) box.style.display = total > 0 ? '' : 'none';
+    if (cnt) cnt.textContent = total;
+  });
+}
+
+async function sincronizarPendientes() {
+  if (!idbSP || !estaOnline) return;
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) return;
+  let total = 0;
+  for (const [store, col] of [
+    ['clientes_pendientes', 'clientes'],
+    ['presupuestos_pendientes', 'presupuestos'],
+    ['eventos_pendientes', 'eventos']
+  ]) {
+    const items = await idbGetAll(store);
+    for (const item of items) {
+      const localId = item.localId;
+      const data = Object.assign({}, item);
+      delete data.localId;
+      try {
+        await addDoc(collection(db, col), Object.assign({}, data, { createdAt: serverTimestamp() }));
+        await idbDelete(store, localId);
+        total++;
+      } catch(e) { console.error('sync error:', e); }
+    }
+  }
+  if (total > 0) { actualizarBadge(); showToast('Registros sincronizados: ' + total); }
+}
+
+function actualizarEstadoConexion(online) {
+  estaOnline = online;
+  const banner = document.getElementById('offlineBanner');
+  if (banner) banner.style.display = online ? 'none' : 'block';
+  if (online) sincronizarPendientes();
+}
+
+window.addEventListener('online', () => actualizarEstadoConexion(true));
+window.addEventListener('offline', () => actualizarEstadoConexion(false));
+
+function initOffline() {
+  abrirIDB()
+    .then(() => { actualizarEstadoConexion(navigator.onLine); actualizarBadge(); })
+    .catch(e => console.error('IDB error:', e));
+}
+
+// BACKUP SecurePro
+async function generarBackup(silencioso) {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) return;
+  try {
+    const [clientesSnap, presupSnap, eventosSnap, productosSnap, negocioSnap] = await Promise.all([
+      getDocs(query(collection(db, 'clientes'), where('uid', '==', uid))),
+      getDocs(query(collection(db, 'presupuestos'), where('uid', '==', uid))),
+      getDocs(query(collection(db, 'eventos'), where('uid', '==', uid))),
+      getDocs(query(collection(db, 'productos'), where('uid', '==', uid))).catch(() => ({docs:[]})),
+      getDoc(doc(db, 'negocios', uid)).catch(() => ({exists: () => false}))
+    ]);
+    const fecha = new Date().toISOString().slice(0, 10);
+    const backup = {
+      app: 'SecurePro', version: '2.1', fecha: new Date().toISOString(), uid,
+      clientes: clientesSnap.docs.map(d => Object.assign({_id: d.id}, d.data())),
+      presupuestos: presupSnap.docs.map(d => Object.assign({_id: d.id}, d.data())),
+      eventos: eventosSnap.docs.map(d => Object.assign({_id: d.id}, d.data())),
+      productos: productosSnap.docs.map(d => Object.assign({_id: d.id}, d.data())),
+      negocio: negocioSnap.exists() ? negocioSnap.data() : {}
+    };
+    const json = JSON.stringify(backup, null, 2);
+    localStorage.setItem('securepro-ultimo-backup', fecha);
+    const el = document.getElementById('ultimoBackupFecha');
+    if (el) el.textContent = fecha;
+    if (!silencioso) {
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'securepro-backup-' + fecha + '.json'; a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup descargado');
+    }
+  } catch(e) { console.error('Error backup:', e); if (!silencioso) showToast('Error al generar backup'); }
+}
+
+async function restaurarBackup(input) {
+  const file = input.files[0]; if (!file) return;
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) { showToast('Iniciá sesion primero'); return; }
+  if (!confirm('Esto agrega los datos del backup. Continuar?')) { input.value = ''; return; }
+  try {
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    if (backup.app !== 'SecurePro') { showToast('Archivo no es backup de SecurePro'); return; }
+    showToast('Restaurando...');
+    const colMap = { clientes: 'clientes', presupuestos: 'presupuestos', eventos: 'eventos', productos: 'productos' };
+    for (const [key, col] of Object.entries(colMap)) {
+      for (const item of (backup[key] || [])) {
+        const id = item._id; const data = Object.assign({}, item); delete data._id;
+        await setDoc(doc(db, col, id), Object.assign({}, data, { uid }));
+      }
+    }
+    if (backup.negocio && Object.keys(backup.negocio).length > 0) {
+      await setDoc(doc(db, 'negocios', uid), backup.negocio, { merge: true });
+    }
+    showToast('Backup restaurado');
+    input.value = '';
+    setTimeout(() => location.reload(), 1500);
+  } catch(e) { showToast('Error al restaurar: ' + e.message); input.value = ''; }
+}
+
+function chequearBackupDiario() {
+  const hoy = new Date().toISOString().slice(0, 10);
+  const ultimo = localStorage.getItem('securepro-ultimo-backup');
+  const el = document.getElementById('ultimoBackupFecha');
+  if (el && ultimo) el.textContent = ultimo;
+  if (ultimo !== hoy) setTimeout(() => generarBackup(true), 5000);
+}
+
 </script>
 </body>
 </html>
