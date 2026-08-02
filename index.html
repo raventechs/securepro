@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!-- SecurePro v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
+<!-- SecurePro v2.2 — 2026-08-01 — Seguridad: sanitizeHTML() completada (presupuestos, catálogo), App Check SDK preparado -->
 <title>SecurePro</title>
 <meta name="description" content="Sistema de gestión profesional para empresas de seguridad.">
 <meta name="theme-color" content="#1d4ed8">
@@ -961,6 +961,7 @@ button[class*="metodo"]:active, button[class*="pago"]:active {
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{initializeAppCheck,ReCaptchaV3Provider}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check.js";
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,GoogleAuthProvider,signInWithPopup,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,doc,addDoc,getDocs,getDoc,updateDoc,deleteDoc,setDoc,query,where,orderBy,onSnapshot,serverTimestamp,Timestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const FB={
@@ -974,6 +975,10 @@ const FB={
 const ADMIN_PIN="2580";
 
 const fbApp=initializeApp(FB);
+const APPCHECK_KEY="";
+if(APPCHECK_KEY){
+  initializeAppCheck(fbApp,{provider:new ReCaptchaV3Provider(APPCHECK_KEY),isTokenAutoRefreshEnabled:true});
+}
 const auth=getAuth(fbApp);
 const db=getFirestore(fbApp);
 async function logError(origen, mensaje, extra) {
@@ -1796,7 +1801,7 @@ function renderPresupItems(){
     const adjPrice=item.precio*(1+(item.adj||0)/100);
     const total=adjPrice*item.qty;
     return`<div class="presup-item-row">
-      <div><div class="presup-item-name">${item.nombre}</div><div class="presup-item-desc">${item.desc||""}</div></div>
+      <div><div class="presup-item-name">${sanitizeHTML(item.nombre)}</div><div class="presup-item-desc">${sanitizeHTML(item.desc||"")}</div></div>
       <div class="presup-item-right">
         <div class="qty-row">
           <button class="qty-btn" data-qi="${i}" data-delta="-1">−</button>
@@ -1928,7 +1933,7 @@ function renderCatalogo(){
   const groups={};prods.forEach(p=>{if(!groups[p.type])groups[p.type]=[];groups[p.type].push(p);});
   let html="";
   Object.keys(groups).forEach(type=>{
-    html+=`<div class="type-label">${PROD_TYPES[type]||type}</div>`;
+    html+=`<div class="type-label">${sanitizeHTML(PROD_TYPES[type]||type)}</div>`;
     groups[type].forEach(p=>{html+=`<div class="prod-card"><div><div class="prod-name">${sanitizeHTML(p.marca)} ${sanitizeHTML(p.nombre)}</div><div class="prod-desc">${sanitizeHTML(buildProdDesc(p))}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="prod-price">${fmtMoney(p.precio)}</span><div class="prod-actions"><button class="btn-sm" data-edit="${p.id}">✏️</button><button class="btn-sm danger" data-del="${p.id}">🗑</button></div></div></div>`;});
   });
   el.innerHTML=html;
