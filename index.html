@@ -2548,5 +2548,321 @@ function chequearBackupDiario() {
 </script>
 
 <!-- Banner PWA — Estándar RavenTechs Onboarding v1.0 -->
+
+<!-- Modal Presupuesto — Crear/Editar -->
+<div id="modal-presup" class="modal">
+  <div class="modal-box" style="max-width:600px;width:95%">
+    <div class="presup-modal-header">
+      <h3 id="presup-modal-titulo">Nuevo presupuesto</h3>
+      <button class="btn-icon" onclick="closeModal('modal-presup')">✕</button>
+    </div>
+    <div class="presup-form-row">
+      <div>
+        <label class="form-label">Cliente</label>
+        <input type="text" id="pres-client" class="form-input" placeholder="Nombre del cliente">
+      </div>
+      <div>
+        <label class="form-label">Fecha</label>
+        <input type="date" id="pres-date" class="form-input">
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="form-label">Estado</label>
+      <div class="presup-estado">
+        <button class="estado-btn sel" data-estado="borrador">Borrador</button>
+        <button class="estado-btn" data-estado="enviado">Enviado</button>
+        <button class="estado-btn" data-estado="aceptado">Aceptado</button>
+        <button class="estado-btn" data-estado="rechazado">Rechazado</button>
+      </div>
+    </div>
+    <label class="form-label">Ítems del presupuesto</label>
+    <div class="presup-items-header">
+      <span>Descripción</span><span>Cant.</span><span>Precio unit.</span><span>Subtotal</span><span></span>
+    </div>
+    <div id="pres-items-list"></div>
+    <button class="btn-sm" style="margin-top:6px" onclick="window.presupAddItem()">+ Agregar ítem</button>
+    <div class="presup-form-row solo" style="margin-top:14px">
+      <div>
+        <label class="form-label">Notas (opcional)</label>
+        <textarea id="pres-notas" class="form-input" rows="2" placeholder="Condiciones, garantía, tiempo de instalación..."></textarea>
+      </div>
+    </div>
+    <div class="presup-total-row">
+      <span class="presup-total-label">Total:</span>
+      <span class="presup-total-val" id="pres-total-display">$0</span>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn-sm" onclick="closeModal('modal-presup')" style="flex:1">Cancelar</button>
+      <button class="btn-sm primary" id="btn-guardar-presup" onclick="window.presupGuardar()" style="flex:2">Guardar presupuesto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Presupuesto -->
+<div id="modal-ver-presup" class="modal">
+  <div class="modal-box" style="max-width:560px;width:95%">
+    <div class="presup-modal-header">
+      <h3 id="ver-presup-client">Presupuesto</h3>
+      <button class="btn-icon" onclick="closeModal('modal-ver-presup')">✕</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <span id="ver-presup-fecha" style="font-size:13px;color:var(--muted)"></span>
+      <span id="ver-presup-estado" style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--surface2)"></span>
+    </div>
+    <div class="presup-items-header">
+      <span>Descripción</span><span>Cant.</span><span>P.Unit.</span><span>Subtotal</span><span></span>
+    </div>
+    <div id="ver-presup-items" class="presup-view-items"></div>
+    <div class="presup-total-row">
+      <span class="presup-total-label">Total:</span>
+      <span class="presup-total-val" id="ver-presup-total"></span>
+    </div>
+    <p id="ver-presup-notas" style="font-size:13px;color:var(--muted);margin-top:10px"></p>
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn-sm" onclick="closeModal('modal-ver-presup')">Cerrar</button>
+      <button class="btn-sm primary" id="btn-edit-presup-open" onclick="window.presupEditar()">✏️ Editar</button>
+      <button class="btn-sm danger" id="btn-del-presup" onclick="window.presupEliminar()" style="margin-left:auto">🗑 Eliminar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
+<script type="module">
+// ══════════════════════════════════════════════════════════
+// MÓDULO PRESUPUESTO SecuroPro — v1.0 | RavenTechs 02/08/2026
+// Gestión completa de presupuestos con ítems libres
+// ══════════════════════════════════════════════════════════
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, getDocs, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app  = getApp();
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── Estado del módulo ──
+var __pItems = [];      // ítems del formulario actual
+var __pEditId = null;   // ID del presupuesto en edición
+var __pEstado = 'borrador';
+
+function fmt$(n) { return '$' + (Number(n)||0).toLocaleString('es-AR'); }
+function getUid() { return auth.currentUser?.uid || null; }
+
+// ── Abrir modal crear ──
+function openNewPresup() {
+  __pEditId = null;
+  __pItems = [];
+  __pEstado = 'borrador';
+  document.getElementById('presup-modal-titulo').textContent = 'Nuevo presupuesto';
+  document.getElementById('pres-client').value = '';
+  document.getElementById('pres-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('pres-notas').value = '';
+  document.getElementById('pres-total-display').textContent = '$0';
+  document.querySelectorAll('.estado-btn').forEach(b => {
+    b.classList.toggle('sel', b.dataset.estado === 'borrador');
+  });
+  renderItemForm();
+  openModal('modal-presup');
+}
+window.openNewPresup = openNewPresup;
+
+// ── Agregar ítem al formulario ──
+function presupAddItem() {
+  __pItems.push({ desc: '', qty: 1, precio: 0, subtotal: 0 });
+  renderItemForm();
+}
+window.presupAddItem = presupAddItem;
+
+// ── Renderizar filas de ítems ──
+function renderItemForm() {
+  const el = document.getElementById('pres-items-list');
+  if (!el) return;
+  if (__pItems.length === 0) {
+    __pItems.push({ desc: '', qty: 1, precio: 0, subtotal: 0 });
+  }
+  el.innerHTML = __pItems.map((it, i) => `
+    <div class="presup-item-row">
+      <input type="text" placeholder="Descripción del producto/servicio"
+        value="${(it.desc||'').replace(/"/g,'&quot;')}"
+        oninput="window.__pSetDesc(${i},this.value)">
+      <input type="number" min="1" value="${it.qty||1}" style="text-align:center"
+        oninput="window.__pSetQty(${i},this.value)">
+      <input type="number" min="0" value="${it.precio||0}" placeholder="0"
+        oninput="window.__pSetPrecio(${i},this.value)">
+      <span class="presup-subtotal">${fmt$(it.subtotal)}</span>
+      <button class="btn-icon" onclick="window.__pDel(${i})">✕</button>
+    </div>`).join('');
+  calcTotal();
+}
+
+// Setters expuestos globalmente para los oninput inline
+window.__pSetDesc   = (i, v) => { if(__pItems[i]) { __pItems[i].desc = v; } };
+window.__pSetQty    = (i, v) => { if(__pItems[i]) { __pItems[i].qty = Number(v)||1; __pItems[i].subtotal = __pItems[i].qty * __pItems[i].precio; calcTotal(); renderItemForm(); } };
+window.__pSetPrecio = (i, v) => { if(__pItems[i]) { __pItems[i].precio = Number(v)||0; __pItems[i].subtotal = __pItems[i].qty * __pItems[i].precio; calcTotal(); renderItemForm(); } };
+window.__pDel       = (i)    => { __pItems.splice(i, 1); renderItemForm(); };
+
+function calcTotal() {
+  const t = __pItems.reduce((s, it) => s + (it.subtotal||0), 0);
+  const el = document.getElementById('pres-total-display');
+  if (el) el.textContent = fmt$(t);
+  return t;
+}
+
+// ── Estado buttons ──
+document.querySelectorAll('.estado-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    __pEstado = btn.dataset.estado;
+    document.querySelectorAll('.estado-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+  });
+});
+
+// ── Guardar presupuesto ──
+async function presupGuardar() {
+  const uid = getUid(); if (!uid) return alert('Iniciá sesión primero.');
+  const client = (document.getElementById('pres-client')?.value||'').trim();
+  if (!client) { alert('Ingresá el nombre del cliente.'); return; }
+  // Sincronizar valores de los inputs antes de guardar
+  document.querySelectorAll('#pres-items-list .presup-item-row').forEach((row, i) => {
+    const inputs = row.querySelectorAll('input');
+    if (__pItems[i]) {
+      __pItems[i].desc   = inputs[0]?.value || '';
+      __pItems[i].qty    = Number(inputs[1]?.value) || 1;
+      __pItems[i].precio = Number(inputs[2]?.value) || 0;
+      __pItems[i].subtotal = __pItems[i].qty * __pItems[i].precio;
+    }
+  });
+  const items = __pItems.filter(it => it.desc.trim());
+  const total = items.reduce((s, it) => s + (it.subtotal||0), 0);
+  const data = {
+    uid, client,
+    date: document.getElementById('pres-date')?.value || new Date().toISOString().slice(0,10),
+    items, total,
+    estado: __pEstado,
+    notas: document.getElementById('pres-notas')?.value || '',
+    ts: serverTimestamp()
+  };
+  const btn = document.getElementById('btn-guardar-presup');
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+  try {
+    if (__pEditId) {
+      await updateDoc(doc(db, 'presupuestos', __pEditId), data);
+    } else {
+      await addDoc(collection(db, 'presupuestos'), data);
+    }
+    closeModal('modal-presup');
+    closeModal('modal-ver-presup');
+    await cargarYRenderPresupuestos();
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Guardar presupuesto'; }
+  }
+}
+window.presupGuardar = presupGuardar;
+
+// ── Ver presupuesto ──
+var __presupData = {};
+window.viewPresup = async function(pid) {
+  const p = __presupData[pid]; if (!p) return;
+  document.getElementById('ver-presup-client').textContent = p.client;
+  document.getElementById('ver-presup-fecha').textContent  = p.date ? p.date.split('-').reverse().join('/') : '—';
+  document.getElementById('ver-presup-estado').textContent = (p.estado||'borrador').toUpperCase();
+  document.getElementById('ver-presup-total').textContent  = fmt$(p.total);
+  document.getElementById('ver-presup-notas').textContent  = p.notas || '';
+  const itemsEl = document.getElementById('ver-presup-items');
+  itemsEl.innerHTML = (p.items||[]).map(it =>
+    `<div class="presup-item-row" style="grid-template-columns:1fr 70px 100px 90px">
+      <span>${it.desc||''}</span>
+      <span style="text-align:center">${it.qty}</span>
+      <span>${fmt$(it.precio)}</span>
+      <span style="font-weight:700">${fmt$(it.subtotal)}</span>
+    </div>`
+  ).join('');
+  document.getElementById('btn-edit-presup-open').dataset.pid = pid;
+  document.getElementById('btn-del-presup').dataset.pid = pid;
+  openModal('modal-ver-presup');
+};
+
+// ── Editar ──
+window.presupEditar = function() {
+  const pid = document.getElementById('btn-edit-presup-open')?.dataset.pid;
+  const p = __presupData[pid]; if (!p) return;
+  __pEditId = pid;
+  __pItems = JSON.parse(JSON.stringify(p.items||[]));
+  __pEstado = p.estado || 'borrador';
+  document.getElementById('presup-modal-titulo').textContent = 'Editar presupuesto';
+  document.getElementById('pres-client').value = p.client||'';
+  document.getElementById('pres-date').value   = p.date||'';
+  document.getElementById('pres-notas').value  = p.notas||'';
+  document.querySelectorAll('.estado-btn').forEach(b => b.classList.toggle('sel', b.dataset.estado === __pEstado));
+  renderItemForm();
+  closeModal('modal-ver-presup');
+  openModal('modal-presup');
+};
+
+// ── Eliminar ──
+window.presupEliminar = async function() {
+  const pid = document.getElementById('btn-del-presup')?.dataset.pid;
+  if (!pid || !confirm('¿Eliminar este presupuesto?')) return;
+  try {
+    await deleteDoc(doc(db, 'presupuestos', pid));
+    closeModal('modal-ver-presup');
+    await cargarYRenderPresupuestos();
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+// ── Cargar y renderizar lista ──
+async function cargarYRenderPresupuestos() {
+  const uid = getUid(); if (!uid) return;
+  const el = document.getElementById('presup-list'); if (!el) return;
+  try {
+    const snap = await getDocs(query(
+      collection(db, 'presupuestos'),
+      where('uid','==',uid),
+      orderBy('ts','desc')
+    ));
+    __presupData = {};
+    snap.forEach(d => { __presupData[d.id] = Object.assign({ id: d.id }, d.data()); });
+    const list = Object.values(__presupData);
+    const ESTADO_COLOR = { borrador:'#888', enviado:'#2980B9', aceptado:'#27AE60', rechazado:'#E74C3C' };
+    el.innerHTML = list.length === 0
+      ? '<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px">💰</div><p style="margin-top:10px">Sin presupuestos<br><small>Tocá + para crear uno</small></p></div>'
+      : list.map(p => {
+          const color = ESTADO_COLOR[p.estado||'borrador'] || '#888';
+          return `<div class="presup-card" data-pid="${p.id}" onclick="viewPresup('${p.id}')">
+            <div class="presup-icon">💰</div>
+            <div class="presup-info" style="flex:1">
+              <div class="presup-client" style="font-weight:700">${p.client||'Sin nombre'}</div>
+              <div class="presup-date" style="font-size:12px;color:var(--muted)">${(p.date||'').split('-').reverse().join('/')} · ${p.items?.length||0} ítem(s)</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800;font-size:15px">${fmt$(p.total)}</div>
+              <div style="font-size:11px;font-weight:600;color:${color}">${(p.estado||'borrador').toUpperCase()}</div>
+            </div>
+          </div>`;
+        }).join('');
+  } catch(e) { console.warn('Presupuestos:', e.message); }
+}
+
+// ── Inicialización ──
+auth.onAuthStateChanged(user => {
+  if (user) cargarYRenderPresupuestos();
+});
+
+// Botón nuevo presupuesto
+const btnNew = document.getElementById('btn-new-presup');
+if (btnNew) btnNew.addEventListener('click', openNewPresup);
+
+// Buscador
+const searchEl = document.getElementById('search-presup');
+if (searchEl) searchEl.addEventListener('input', () => {
+  const q = searchEl.value.toLowerCase();
+  document.querySelectorAll('.presup-card[data-pid]').forEach(card => {
+    const txt = card.textContent.toLowerCase();
+    card.style.display = txt.includes(q) ? '' : 'none';
+  });
+});
+</script>
