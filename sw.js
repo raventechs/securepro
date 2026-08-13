@@ -1,5 +1,5 @@
 /* Service Worker — SecuroPro | RavenTechs | 02/08/2026 */
-var CACHE = 'securopro-pwa-v1';
+var CACHE = 'securopro-pwa-v2';
 var SHELL = ['/', '/index.html', '/manifest.json'];
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) {
@@ -14,6 +14,18 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
   if (url.indexOf('firestore')!==-1||url.indexOf('firebase')!==-1||url.indexOf('googleapis')!==-1||url.indexOf('gstatic')!==-1) return;
+
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then(function(res) {
+        var c = res.clone();
+        caches.open(CACHE).then(function(ca){ ca.put(e.request, c); });
+        return res;
+      }).catch(function() { return caches.match('/index.html'); })
+    );
+    return;
+  }
+
   e.respondWith(caches.match(e.request).then(function(cached) {
     var net = fetch(e.request).then(function(res) {
       if (res && res.status===200 && e.request.method==='GET') { var c=res.clone(); caches.open(CACHE).then(function(ca){ca.put(e.request,c);}); }
