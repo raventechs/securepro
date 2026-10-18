@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!-- SecurePro v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
+<!-- SecurePro v2.2 — 2026-10-18 — MODO PRÁCTICA (Mi Empresa → 🎓): 8 clientes (casas, comercios, barrio cerrado), catálogo con precios estimativos, 5 presupuestos, agenda y seguimientos, todo _demo y se quita con un botón. v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
 <title>SecurePro</title>
 <meta name="description" content="Sistema de gestión profesional para empresas de seguridad.">
 <meta name="theme-color" content="#1d4ed8">
@@ -679,6 +679,14 @@ var __rtPWA = (function() {
     <div class="section" id="section-configuracion">
       <div class="sec-header"><div class="sec-title">Mi Empresa</div></div>
       <div class="card">
+        <div class="card-title">🎓 Modo Práctica</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Carga una empresa de seguridad de ejemplo: 8 clientes, catálogo de productos (precios estimativos), presupuestos, agenda y seguimientos. Sirve para aprender o mostrar la app. Se quita con un botón sin tocar tus datos reales.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-save" style="padding:8px 14px;font-size:13px;" onclick="cargarPractica()">🎓 Cargar datos de práctica</button>
+          <button class="btn-sm" style="padding:8px 14px;font-size:13px;color:var(--danger,#dc2626);" onclick="quitarPractica()">🧽 Quitar datos de práctica</button>
+        </div>
+      </div>
+      <div class="card">
         <div class="card-title">Backup de datos</div>
         <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Se genera automaticamente una vez por dia. Incluye clientes, presupuestos, eventos, productos y configuracion.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
@@ -1071,6 +1079,82 @@ function applyTheme(t){
 function toggleTheme(){applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");}
 initTheme();
 function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+
+// ══════════ MODO PRÁCTICA (v2.2) ══════════
+// Todo lo creado lleva _demo:true y se quita sin tocar datos reales. Precios estimativos en ARS.
+const _fd=(dias)=>{const d=new Date();d.setDate(d.getDate()+dias);return d.toISOString().slice(0,10);};
+async function cargarPractica(){
+  if(!me||!negocioId)return;
+  if(!confirm("Se carga una empresa de práctica: clientes, productos, presupuestos, agenda y seguimientos de mentira. Podés quitarlos después. ¿Seguir?"))return;
+  try{
+    const ya=await getDocs(query(collection(db,"clientes"),where("negocioId","==",negocioId),where("_demo","==",true)));
+    if(!ya.empty){toast("Ya hay una práctica cargada. Quitala primero.","err");return;}
+    toast("Cargando práctica…");
+    const base={negocioId,uid:me.uid,_demo:true};
+    const add=async(col,data)=>(await addDoc(collection(db,col),Object.assign({},data,base,{createdAt:serverTimestamp()}))).id;
+    const prods=[
+      ["camara","Hikvision","Cámara bala IP 4MP",62000,{mp:"4",ubicacion:"Exterior"}],
+      ["camara","Dahua","Cámara domo IP 2MP",48000,{mp:"2",ubicacion:"Interior"}],
+      ["dvr","Hikvision","NVR 8 canales PoE",185000,{canales:"8"}],
+      ["dvr","Dahua","DVR 16 canales",140000,{canales:"16"}],
+      ["alarma","DSC","Kit alarma panel + 3 sensores + sirena",240000,{componente:"Panel"}],
+      ["alarma","Paradox","Sensor de movimiento inalámbrico",28000,{componente:"Sensor de movimiento"}],
+      ["acceso","ZKTeco","Lector biométrico con cerradura",210000,{}],
+      ["cerco","Genérico","Cerco eléctrico (por metro lineal)",9500,{}],
+      ["manoobra","","Instalación de cámaras (por punto)",35000,{}],
+      ["manoobra","","Visita técnica y mantenimiento",45000,{}]
+    ];
+    const pid=[];
+    for(const [type,marca,nombre,precio,extra] of prods)pid.push(await add("productos",Object.assign({type,marca,nombre,precio,notas:""},extra)));
+    const cl=[
+      ["Familia Rodríguez","11 5555-0101","Av. Rivadavia 4300, Ramos Mejía","Casa",{camaras:true,alarma:true}],
+      ["Panadería La Espiga","11 5555-0102","Belgrano 820, San Justo","Comercio",{camaras:true}],
+      ["Barrio Los Álamos","11 5555-0103","Ruta 3 km 28, Virrey del Pino","Barrio cerrado",{camaras:true,acceso:true,cerco:true}],
+      ["Ferretería Del Oeste","11 5555-0104","Illia 1500, Ciudad Evita","Comercio",{camaras:true,alarma:true}],
+      ["Dra. Martínez (consultorio)","11 5555-0105","Perón 2200, San Justo","Consultorio",{alarma:true,acceso:true}],
+      ["Familia Gómez","11 5555-0106","Luro 350, Haedo","Casa",{camaras:true,cerco:true}],
+      ["Transportes Del Sur","11 5555-0107","Parque Industrial, Laferrere","Depósito",{camaras:true,alarma:true,cerco:true}],
+      ["Gimnasio PowerFit","11 5555-0108","Arieta 3100, San Justo","Comercio",{camaras:true,acceso:true}]
+    ];
+    const cid=[];
+    for(const [name,phone,addr,notes,f] of cl)cid.push(await add("clientes",{name,phone,email:"",addr,notes:"Cliente de práctica · "+notes,camaras:!!f.camaras,alarma:!!f.alarma,cerco:!!f.cerco,acceso:!!f.acceso,detalle:{cam:{qty:f.camaras?"4":"",mp:"4",int:true,ext:true,domo:false,bala:true,notes:""},alarm:{qty:f.alarma?"1":"",panel:"",mov:true,aper:true,barr:false,sirena:"si",notes:""},cerco:{metros:f.cerco?"120":"",voltaje:"",sectores:"",notes:""},acc:{qty:f.acceso?"2":"",tipo:"",notes:""}}}));
+    const item=(i,qty)=>({prodId:pid[i],nombre:(prods[i][1]+" "+prods[i][2]).trim(),desc:prods[i][1],precio:prods[i][3],qty,adj:0});
+    const pres=[
+      [0,[item(0,4),item(2,1),item(8,5)],0],
+      [1,[item(1,3),item(3,1),item(8,3)],0],
+      [2,[item(0,12),item(2,2),item(6,2),item(7,300)],-5],
+      [3,[item(4,1),item(5,4),item(9,1)],0],
+      [6,[item(0,8),item(4,1),item(7,200),item(8,8)],-8]
+    ];
+    for(const [ci,items,adj] of pres){
+      const subtotal=items.reduce((t,it)=>t+it.precio*it.qty,0);
+      await add("presupuestos",{client:cl[ci][0],date:_fd(-(ci+1)*3),notes:"Presupuesto de práctica (precios estimativos)",items,subtotal,totalAdj:adj,total:subtotal*(1+adj/100)});
+    }
+    const ev=[["Instalación de cámaras",2,"09:00",0],["Visita técnica",3,"15:30",1],["Relevamiento barrio",5,"10:00",2],["Mantenimiento alarma",7,"11:00",4],["Entrega de presupuesto",1,"17:00",3],["Instalación cerco",9,"08:30",5]];
+    for(const [title,d,time,ci] of ev)await add("eventos",{title,date:_fd(d),time,client:cl[ci][0],notes:"Evento de práctica"});
+    const seg=[[0,"llamado",3],[2,"visita",6],[3,"llamado",-2],[7,"presupuesto",10]];
+    for(const [ci,tipo,d] of seg)await add("seguimiento",{tipo:(["llamado","visita"].includes(tipo)?tipo:"llamado"),tipoCustom:"",fecha:_fd(d),recordatorio:"",notas:"Seguimiento de práctica",clientId:cid[ci],estado:"pendiente"});
+    await loadData();
+    renderDashboard();renderClients();renderPresupuestos();renderCatalogo();renderCalendar();renderEvents();
+    toast("✅ Práctica cargada: mirá Clientes, Presupuestos y Agenda","ok");
+  }catch(e){logError&&logError("cargarPractica",e);console.error(e);toast("Error: "+e.message,"err");}
+}
+async function quitarPractica(){
+  if(!me||!negocioId)return;
+  if(!confirm("Se quitan SOLO los datos de práctica. Tus clientes, presupuestos y productos reales no se tocan. ¿Seguir?"))return;
+  try{
+    toast("Quitando práctica…");
+    for(const col of ["clientes","presupuestos","productos","eventos","seguimiento"]){
+      const snap=await getDocs(query(collection(db,col),where("negocioId","==",negocioId),where("_demo","==",true)));
+      for(const d of snap.docs)await deleteDoc(d.ref);
+    }
+    await loadData();
+    renderDashboard();renderClients();renderPresupuestos();renderCatalogo();renderCalendar();renderEvents();
+    toast("✅ Datos de práctica quitados","ok");
+  }catch(e){console.error(e);toast("Error: "+e.message,"err");}
+}
+window.cargarPractica=cargarPractica;window.quitarPractica=quitarPractica;
+
 function toast(msg,type=""){
   const el=document.createElement("div");el.className="toast"+(type?" "+type:"");
   el.textContent=(type==="err"?"❌ ":type==="ok"?"✅ ":"✅ ")+msg;
