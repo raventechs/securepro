@@ -1565,8 +1565,9 @@ if(_inviteCode){
         document.getElementById("invite-already-logged").style.display="none";
         return;
       }
-      const negSnap=await getDoc(doc(db,"negocios",inv.negocioId));
-      const neg=negSnap.exists()?negSnap.data():{nombre:"este negocio"};
+      // Las reglas no dejan leer el negocio a quien todavía no es parte del equipo: nombre genérico
+      let neg={nombre:"este negocio"};
+      try{const negSnap=await getDoc(doc(db,"negocios",inv.negocioId));if(negSnap.exists())neg=negSnap.data();}catch(e){}
       const rolLabel=inv.rol==="viewer"?"👁 Viewer (solo lectura)":"✏️ Editor";
       document.getElementById("invite-neg-nombre").textContent=neg.nombre||"Equipo de seguridad";
       document.getElementById("invite-neg-sub").textContent=`Fuiste invitado a unirte como ${rolLabel}`;
