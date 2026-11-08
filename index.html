@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!-- SecurePro v2.3 — 2026-10-26 — BACKUP ARREGLADO (estaba en un script que no veía la base y fallaba siempre; ahora por negocio, baja el archivo y deja copia local). v2.2 — 2026-10-18 — MODO PRÁCTICA (Mi Empresa → 🎓): 8 clientes (casas, comercios, barrio cerrado), catálogo con precios estimativos, 5 presupuestos, agenda y seguimientos, todo _demo y se quita con un botón. v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
+<!-- SecurePro v2.4 — 2026-11-08 — PLUS «Agenda y seguimiento» (cuentas nuevas: solo en la demo o si el admin lo activa; las existentes lo conservan) y menú admin de equipo con botones. Antes: v2.3 2026-10-26 — BACKUP ARREGLADO (estaba en un script que no veía la base y fallaba siempre; ahora por negocio, baja el archivo y deja copia local). v2.2 — 2026-10-18 — MODO PRÁCTICA (Mi Empresa → 🎓): 8 clientes (casas, comercios, barrio cerrado), catálogo con precios estimativos, 5 presupuestos, agenda y seguimientos, todo _demo y se quita con un botón. v2.1 — 2026-07-03 — P1+P2+P3+P5 ROBUSTEZ -->
 <title>SecurePro</title>
 <meta name="description" content="Sistema de gestión profesional para empresas de seguridad.">
 <meta name="theme-color" content="#1d4ed8">
@@ -472,6 +472,12 @@ button[class*="metodo"]:active, button[class*="pago"]:active {
 }
 /* ──────────────────────────────────────────────────── */
 
+/* Plus: pantalla de bloqueo con botón para pedirlo por WhatsApp */
+.plus-locked>*:not(.plus-lock){display:none!important}
+.plus-lock{text-align:center;padding:28px 18px;border:2px dashed var(--gold,#C9A227);border-radius:16px;margin:12px 0}
+.plus-lock .pl-t{font-size:16px;font-weight:800;margin-bottom:6px}
+.plus-lock .pl-d{font-size:13px;color:var(--muted);margin-bottom:14px}
+.plus-lock a{display:inline-block;background:#25D366;color:#fff;font-weight:700;padding:10px 16px;border-radius:12px;text-decoration:none}
 </style>
 <script>
 // RavenTechs PWA Banner v1.1 — en el HEAD para capturar beforeinstallprompt temprano
@@ -1168,6 +1174,20 @@ function canEdit(){return myRole==="owner"||myRole==="editor";}
 function canDelete(){return myRole==="owner";}
 function isOwner(){return myRole==="owner";}
 function tieneEquipo(){return (userDoc?.features?.limiteEmpleados??1) > 1;}
+/* ⭐ PLUS: cuentas creadas hasta el 8/11/2026 conservan todo; las nuevas prueban todo durante la demo y después solo lo que active el admin (features.<plus>=true). */
+const PLUS_DESDE=Date.UTC(2026,10,9);
+function plusCuentaNueva(){const c=userDoc?.createdAt?.toMillis?userDoc.createdAt.toMillis():0;return !!c&&c>=PLUS_DESDE;}
+function plusOk(k){if(!userDoc)return true;if(me&&me.email==="rgaraventa@gmail.com")return true;if(userDoc.features&&userDoc.features[k]===true)return true;if(userDoc.status==="demo")return true;return !plusCuentaNueva();}
+function plusMarca(k){return plusCuentaNueva()&&!(userDoc?.features&&userDoc.features[k]===true)?" ⭐":"";}
+function plusAplicar(sectionId,k,titulo,desc){
+  const sec=document.getElementById("section-"+sectionId);if(!sec)return true;
+  let lock=sec.querySelector(".plus-lock");
+  if(plusOk(k)){if(lock)lock.remove();sec.classList.remove("plus-locked");return true;}
+  if(!lock){lock=document.createElement("div");lock.className="plus-lock";sec.insertBefore(lock,sec.firstChild);}
+  lock.innerHTML='<div class="pl-t">⭐ '+titulo+' (Plus)</div><div class="pl-d">'+desc+'</div><a target="_blank" rel="noopener" href="https://wa.me/5491136547592?text='+encodeURIComponent("Hola RavenTechs, quiero activar el Plus «"+titulo+"» en mi cuenta de SecurePro")+'">📲 Pedir el Plus por WhatsApp</a>';
+  sec.classList.add("plus-locked");return false;
+}
+function plusRefrescarNav(){const b=document.querySelector('.nav-btn[data-section="calendario"]');if(b)b.textContent="📅 Agenda"+plusMarca("agenda");}
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const MESES_CORTO=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 const PROD_TYPES={camara:"📷 Cámara",alarma:"🔔 Alarma/Sensor",dvr:"🖥 DVR/NVR",acceso:"🚪 Acceso",cerco:"⚡ Cerco",manoobra:"🔧 Mano de obra",otro:"📦 Otro"};
@@ -1368,10 +1388,11 @@ async function loadAdminUsers(){
         <button class="btn-adel" data-uid="${d.id}">🗑️ Eliminar</button>
       </div>
       ${demoActions}
-      ${u.rol==='owner'?`<div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--muted)">Plan Empresa (límite de empleados):</span>
-        <input type="number" min="1" max="50" value="${u.features?.limiteEmpleados??1}" style="width:56px;padding:6px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--font)" data-lim-uid="${d.id}"/>
-        <button class="btn-alim" data-uid="${d.id}">💾 Guardar</button>
+      ${u.rol==='owner'?`<div style="margin-top:8px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">👥 Equipo (empleados) — actual: ${u.features?.limiteEmpleados??1}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${[[1,'Sin equipo'],[3,'Hasta 3'],[10,'Hasta 10']].map(o=>{const a=((u.features?.limiteEmpleados??1)===o[0]);return`<button class="btn-alim" data-uid="${d.id}" data-val="${o[0]}" style="padding:6px 10px;border-radius:8px;border:1.5px solid ${a?'var(--gold)':'var(--border)'};background:${a?'rgba(201,162,39,.18)':'transparent'};color:inherit;font-weight:${a?700:500};font-size:12px">${o[1]}</button>`;}).join('')}</div>
+        <div style="font-size:12px;color:var(--muted);margin:8px 0 4px">📅 Agenda y seguimiento ⭐ ${u.features?.agenda===true?'(activa)':'(cuentas nuevas: solo en la demo)'}</div>
+        <button class="btn-aplus" data-uid="${d.id}" data-k="agenda" data-val="${u.features?.agenda===true?'0':'1'}" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:inherit;font-size:12px">${u.features?.agenda===true?'✅ Activa — tocar para quitar':'🔒 Activar para esta cuenta'}</button>
       </div>`:''}
     </div>`;
   }).join("");
@@ -1386,7 +1407,7 @@ async function loadAdminClients(){
 document.getElementById("admin-users-list").addEventListener("click",async e=>{
   const ban=e.target.closest(".btn-aban");const unban=e.target.closest(".btn-aunban");const del=e.target.closest(".btn-adel[data-uid]");
   const ext=e.target.closest(".btn-aext");const act=e.target.closest(".btn-aact");
-  const lim=e.target.closest(".btn-alim");
+  const lim=e.target.closest(".btn-alim");const plusB=e.target.closest(".btn-aplus");
   if(ban&&confirm("¿Banear este usuario?")){await updateDoc(doc(db,"usuarios",ban.dataset.uid),{banned:true});toast("Usuario baneado");await loadAdminUsers();}
   if(unban){await updateDoc(doc(db,"usuarios",unban.dataset.uid),{banned:false});toast("Usuario desbaneado");await loadAdminUsers();}
   if(del&&confirm("¿Eliminar este usuario?")){await deleteDoc(doc(db,"usuarios",del.dataset.uid));toast("Usuario eliminado");await loadAdminUsers();}
@@ -1409,8 +1430,15 @@ document.getElementById("admin-users-list").addEventListener("click",async e=>{
     }catch(e){console.error("No se pudo propagar el activo al negocio:",e);}
     toast("Cuenta activada","ok");await loadAdminUsers();
   }
+  if(plusB){
+    const k=plusB.dataset.k,on=plusB.dataset.val==="1";
+    try{
+      await updateDoc(doc(db,"usuarios",plusB.dataset.uid),{["features."+k]:on});
+      toast(on?"Plus activado":"Plus desactivado","ok");await loadAdminUsers();
+    }catch(e){toast("Error al actualizar el plus","err");}
+  }
   if(lim){
-    const nuevoLimite=parseInt(document.querySelector(`input[data-lim-uid="${lim.dataset.uid}"]`)?.value)||1;
+    const nuevoLimite=parseInt(lim.dataset.val)||1;
     try{
       await updateDoc(doc(db,"usuarios",lim.dataset.uid),{"features.limiteEmpleados":nuevoLimite});
       toast(`Límite de empleados actualizado a ${nuevoLimite}`,"ok");
@@ -1484,7 +1512,7 @@ onAuthStateChanged(auth,async user=>{
       snap=await getDoc(userRef);
     }
 
-    userDoc=snap.data();
+    userDoc=snap.data();try{plusRefrescarNav();}catch(_){}
     if(userDoc.banned){toast("Cuenta suspendida","err");await signOut(auth);return;}
 
     if(!userDoc.negocioId){
@@ -1744,7 +1772,7 @@ function showSection(name){
   else if(name==="clientes")renderClients();
   else if(name==="presupuestos")renderPresupuestos();
   else if(name==="catalogo")renderCatalogo();
-  else if(name==="calendario"){renderCalendar();renderEvents();}
+  else if(name==="calendario"){if(plusAplicar("calendario","agenda","Agenda y seguimiento","Calendario de visitas, recordatorios de mantenimiento y seguimiento postventa de tus clientes.")){renderCalendar();renderEvents();}else fab.style.display="none";}
   else if(name==="configuracion")loadConfigForm();
   else if(name==="equipo")renderEquipo();
 }
